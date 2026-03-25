@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/react";
-import { ArrowRight, ArrowLeft, Menu, X, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ArrowRight, Menu, X, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import ryanLaptopImg from '@/photos/Ryan Kroge pics/ryan using his laptop.jpg';
 
 // ---------------------------------------------------------------------------
@@ -281,7 +281,7 @@ const ProcessSection = () => {
   return (
     <>
       {/* ── MOBILE: static step list ───────────────────────────────────── */}
-      <section className="lg:hidden relative bg-[#F5F5F0] border-t border-black/8 px-6 sm:px-10 pt-20 pb-20">
+      <section className="lg:hidden relative bg-[#F5F5F0] border-t border-black/8 px-6 sm:px-10 pt-20 pb-20" style={{ backgroundImage: "radial-gradient(ellipse 65% 55% at 22% 65%, rgba(212,175,55,0.11) 0%, transparent 60%), radial-gradient(ellipse 55% 45% at 78% 35%, rgba(212,175,55,0.07) 0%, transparent 60%)" }}>
 
         <div className="mb-14">
           <span className="font-kiona text-[9px] text-black/35 block mb-6">PROCESS</span>
@@ -317,7 +317,7 @@ const ProcessSection = () => {
       </section>
 
       {/* ── DESKTOP: sticky split-screen ──────────────────────────────── */}
-      <section className="hidden lg:flex relative bg-[#F5F5F0] border-t border-black/8 h-screen overflow-hidden">
+      <section className="hidden lg:flex relative bg-[#F5F5F0] border-t border-black/8 h-screen overflow-hidden" style={{ backgroundImage: "radial-gradient(ellipse 65% 55% at 22% 65%, rgba(212,175,55,0.11) 0%, transparent 60%), radial-gradient(ellipse 55% 45% at 78% 35%, rgba(212,175,55,0.07) 0%, transparent 60%)" }}>
 
         {/* Left column — static, vertically centred */}
         <div className="shrink-0 w-[42%] flex flex-col justify-center pl-24 pr-10 z-10">
@@ -1198,9 +1198,9 @@ export default function App() {
             <div className="grid grid-cols-2 gap-x-12 gap-y-10 md:gap-x-16 md:gap-y-12">
               {[
                 { value: "25+", label: "Years Experience" },
-                { value: "100+", label: "Businesses Helped" },
+                { value: "1000+", label: "Businesses Helped" },
                 { value: "24 Hours", label: "Initial Qualification Guidance" },
-                { value: "$300K–$5M", label: "Typical Loan Range" },
+                { value: "$500K–$10M", label: "Typical Loan Range" },
                 { value: "Nationwide", label: "Lending Support" },
               ].map(({ value, label }, i) => (
                 <motion.div
@@ -1261,18 +1261,6 @@ export default function App() {
               viewport={{ once: true }}
               className="flex items-center gap-3 shrink-0 self-start lg:self-end"
             >
-              <button
-                aria-label="Previous service"
-                className="w-11 h-11 border border-black/15 flex items-center justify-center text-black/35 hover:border-black/40 hover:text-black transition-all duration-300"
-              >
-                <ArrowLeft size={15} strokeWidth={1.5} />
-              </button>
-              <button
-                aria-label="Next service"
-                className="w-11 h-11 bg-black text-white flex items-center justify-center hover:bg-[#D4AF37] hover:text-black transition-all duration-300"
-              >
-                <ArrowRight size={15} strokeWidth={1.5} />
-              </button>
             </motion.div>
           </div>
 
@@ -1315,25 +1303,25 @@ export default function App() {
                   y: { type: "spring", stiffness: 260, damping: 22 },
                 }}
                 viewport={{ once: true }}
-                className="bg-white/[0.18] backdrop-blur-xl rounded-2xl border border-white/50 shadow-[0_4px_24px_rgba(0,0,0,0.06),_0_1px_2px_rgba(0,0,0,0.04),_inset_0_1px_0_rgba(255,255,255,0.92),_inset_0_-1px_0_rgba(0,0,0,0.04)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.1),_0_2px_4px_rgba(0,0,0,0.06),_inset_0_1px_0_rgba(255,255,255,0.92)] transition-shadow duration-300 cursor-pointer flex flex-col p-8 sm:p-10 min-h-[440px] sm:min-h-[480px]"
+                className="bg-white/[0.18] backdrop-blur-xl rounded-2xl border border-white/50 shadow-[0_4px_24px_rgba(0,0,0,0.06),_0_1px_2px_rgba(0,0,0,0.04),_inset_0_1px_0_rgba(255,255,255,0.92),_inset_0_-1px_0_rgba(0,0,0,0.04)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.1),_0_2px_4px_rgba(0,0,0,0.06),_inset_0_1px_0_rgba(255,255,255,0.92)] transition-shadow duration-300 cursor-pointer flex flex-col p-7 sm:p-9 sm:min-h-[440px] lg:min-h-[460px]"
               >
-                {/* Card header */}
-                <div className="flex items-start justify-between mb-6">
-                  <h3 className="font-medium text-[1rem] md:text-[1.05rem] text-black leading-snug max-w-[72%]">
+                {/* Card header — min-h ensures icon row aligns across cards */}
+                <div className="flex items-start justify-between mb-6 min-h-[3.5rem]">
+                  <h3 className="font-medium text-[1rem] md:text-[1.05rem] text-black leading-snug max-w-[70%]">
                     {title}
                   </h3>
-                  <span className="font-kiona text-[7px] text-black/28 text-right leading-relaxed mt-0.5 shrink-0">
+                  <span className="font-kiona text-[7px] text-black/28 text-right leading-relaxed mt-0.5 shrink-0 max-w-[28%]">
                     {tag}
                   </span>
                 </div>
 
                 {/* Dotted SVG icon */}
                 <div className="flex-1 flex items-center justify-center py-4">
-                  <Icon className="w-full max-w-[190px] text-black/18" />
+                  <Icon className="w-full max-w-[180px] text-black/18" />
                 </div>
 
                 {/* Description + learn more */}
-                <div className="mt-auto pt-7 border-t border-black/8">
+                <div className="mt-auto pt-6 border-t border-black/8">
                   <p className="text-[13px] md:text-sm text-black/55 leading-relaxed">
                     {description}
                   </p>
