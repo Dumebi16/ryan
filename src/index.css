@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", sans-serif;
+  --font-kiona: "Inter", sans-serif;
+  
+  --color-primary: #D4AF37;
+  --color-secondary: #F5F5F0;
+  --color-accent: #10B981;
+}
+
+@layer base {
+  body {
+    @apply bg-black text-secondary font-sans antialiased;
+  }
+  
+  h1 {
+    @apply font-sans font-medium;
+  }
+}
+
+.font-kiona {
+  font-family: var(--font-kiona);
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  font-weight: 400;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
