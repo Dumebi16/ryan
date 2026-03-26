@@ -1242,9 +1242,7 @@ export default function App() {
             >
               <span className="font-kiona text-[9px] text-black/35 block mb-6">CAPABILITIES</span>
               <h2 className="text-[1.75rem] sm:text-[2rem] md:text-[2.5rem] lg:text-[2.75rem] font-medium text-black leading-tight tracking-tight mb-5">
-                Strategic Funding Solutions<br className="hidden sm:block" />
-                for Growth, Acquisition,<br className="hidden sm:block" />
-                and Long-Term Success
+                Strategic Funding Solutions<br className="hidden lg:block" />{" "}for Growth, Acquisition,<br className="hidden lg:block" />{" "}and Long-Term Success
               </h2>
               <p className="text-sm md:text-[15px] text-black/50 leading-relaxed max-w-lg">
                 Ryan works with business owners who need more than a loan product. He provides financing
