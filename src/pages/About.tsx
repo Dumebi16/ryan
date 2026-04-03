@@ -1,304 +1,505 @@
 import { motion } from "motion/react";
-import { ArrowRight, CheckCircle2, Phone, Clock } from "lucide-react";
+import { useEffect, useRef, ReactNode } from "react";
+import { Phone, FileText, UserCheck, CheckCircle } from "lucide-react";
+import heroImg from '@/photos/Ryan Kroge pics/expanded ryan .png';
+import splitScreenImg from '@/photos/Ryan Kroge pics/Ryan_Kroge-21 BW-2.jpg';
+import missionImg from '@/photos/Ryan Kroge pics/Ryan_Kroge-53 BW.jpg';
 
-export default function About() {
+// Component to handle individual line scroll-scrubbed opacity using Vanilla JS
+function RevealLine({ children, isSpace = false }: { children?: ReactNode, isSpace?: boolean }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      const rect = el.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate where the element is relative to the viewport height
+      // rect.top is 0 at the top of the viewport, windowHeight at the bottom
+      const progress = 1 - (rect.top / windowHeight);
+      
+      // progress goes from 0 (at bottom) to 1 (at top)
+      
+      let opacity = 0.15;
+      
+      // Start fading in at progress 0.2 (20% above bottom)
+      // Fully opaque at progress 0.35
+      // Stays opaque until progress 0.65
+      // Fades out linearly, back to 0.15 at progress 0.8 (80% above bottom)
+      if (progress >= 0.2 && progress <= 0.8) {
+        if (progress < 0.35) {
+          // Fade in [0.2 -> 0.35] maps to [0.15 -> 1]
+          opacity = 0.15 + ((progress - 0.2) / 0.15) * 0.85; 
+        } else if (progress < 0.65) {
+          // Held opaque
+          opacity = 1;
+        } else {
+          // Fade out [0.65 -> 0.8] maps to [1 -> 0.15]
+          opacity = 1 - ((progress - 0.65) / 0.15) * 0.85;
+        }
+      }
+      
+      // Constrain opacity bounds cleanly
+      el.style.opacity = Math.max(0.15, Math.min(1, opacity)).toString();
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // run once on mount
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  if (isSpace) {
+    return <div className="h-8 sm:h-12 md:h-16 w-full" aria-hidden="true" />;
+  }
+
   return (
-    <div 
-      className="bg-secondary min-h-screen pt-32 pb-24 px-6 sm:px-10 lg:px-24 relative overflow-hidden"
-      style={{ 
-        backgroundImage: `radial-gradient(ellipse 65% 55% at 22% 65%, rgba(212,175,55,0.11) 0%, transparent 60%), radial-gradient(ellipse 55% 45% at 78% 35%, rgba(212,175,55,0.07) 0%, transparent 60%), url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%23000' stroke-opacity='0.02' stroke-width='0.5'%3E%3Cpath d='M36 34v-1h-1v1h1zm1 0h1v1h-1v-1zm-1 1h1v1h-1v-1zM37 34v1h-1v-1h1zm1 1v1h-1v-1h1zM34 36h1v1h-1v-1zm0-1h1v1h-1v-1zm1 0h1v1h-1v-1z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` 
-      }}
+    <p 
+      ref={ref}
+      style={{ opacity: 0.15, transition: "opacity 0.1s ease-out", willChange: "opacity" }}
+      className="text-white text-[30px] font-medium leading-[1.25] tracking-tight text-center mx-auto max-w-5xl"
     >
-      {/* ── 1. Hero / Hook ────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto pt-12 md:pt-20 mb-32">
-        <div className="relative mb-16 md:mb-24">
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-[14vw] md:text-[10vw] font-medium text-black leading-none tracking-tighter"
-          >
-            About
-          </motion.h1>
+      {children}
+    </p>
+  );
+}
+
+function WhoIAmSection() {
+  return (
+    <section 
+      className="relative w-full z-10 bg-black px-6 py-20 sm:py-28 lg:py-32 flex flex-col items-center justify-center"
+    >
+      {/* Eyebrow Label (Centered) */}
+      <motion.h2 
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="font-kiona text-[9px] sm:text-[10px] text-white tracking-[0.25em] font-medium mb-12 sm:mb-16 uppercase text-center"
+      >
+        WHO I AM
+      </motion.h2>
+
+      {/* Scroll-Triggered Text Reveal Content */}
+      <div className="w-full flex flex-col items-center space-y-2 sm:space-y-4">
+        <RevealLine>I'm Ryan Kroge. Small business</RevealLine>
+        <RevealLine>lending specialist.</RevealLine>
+        <RevealLine>Detroit-based, nationwide reach.</RevealLine>
+        
+        <RevealLine isSpace />
+        
+        <RevealLine>I don't push loans. I build deals —</RevealLine>
+        <RevealLine>creative, well-structured deals that unlock</RevealLine>
+        <RevealLine>money most business owners didn't</RevealLine>
+        <RevealLine>think they could access.</RevealLine>
+        
+        <RevealLine isSpace />
+        
+        <RevealLine>I work with founders, operators,</RevealLine>
+        <RevealLine>and buyers at every stage. Whether</RevealLine>
+        <RevealLine>you're acquiring a business, expanding,</RevealLine>
+        <RevealLine>or just tired of operating on fumes —</RevealLine>
+        
+        <RevealLine>I've seen your situation before, and</RevealLine>
+        <RevealLine><span className="font-normal opacity-50">I know the path forward.</span></RevealLine>
+      </div>
+    </section>
+  );
+}
+
+const WHY_CHOOSE_ME_CARDS = [
+  {
+    num: "01.",
+    title: "I answer in 24 hours.",
+    desc: "Yes or no. No \"we'll circle back.\" No radio silence for two weeks. You deserve to know where you stand — fast."
+  },
+  {
+    num: "02.",
+    title: "I've been doing this for 25+ years.",
+    desc: "That's not a resume flex. That's pattern recognition. I've seen what works, what doesn't, and how to structure your deal so the lender can't say no."
+  },
+  {
+    num: "03.",
+    title: "I think like a lender, work like an advisor.",
+    desc: "I'm on your side — but I know the other side of the table better than anyone. That perspective is worth more than any generic lending checklist."
+  },
+  {
+    num: "04.",
+    title: "I'm backed by an elite team.",
+    desc: "SBA financing is complex. My team has seen every edge case, exception, and creative structure in the book. You're not getting one person's opinion — you're getting decades of collective expertise."
+  },
+  {
+    num: "05.",
+    title: "I'm backed by an elite team.",
+    desc: "SBA financing is complex. My team has seen every edge case, exception, and creative structure in the book. You're not getting one person's opinion — you're getting decades of collective expertise."
+  }
+];
+
+function WhyChooseMeSection() {
+  return (
+    <section className="relative w-full bg-black border-t border-white/[0.04]">
+      {/* Container */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 md:px-16 lg:px-24 flex flex-col md:flex-row items-start relative">
+        
+        {/* Left Panel (Fixed/Sticky) */}
+        <div className="md:w-[40%] md:sticky md:top-0 md:h-screen flex flex-col justify-center pt-20 pb-10 md:pt-0 md:pb-0 z-10 self-start">
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 0.1, x: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-            className="absolute top-[60%] left-[5%] md:left-[8%] whitespace-nowrap"
-          >
-            <span className="text-[12vw] md:text-[8vw] font-medium text-black leading-none tracking-tighter">
-              Ryan Kroge
-            </span>
-          </motion.div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="max-w-3xl"
-        >
-          <h2 className="text-[28px] md:text-[42px] font-medium text-black leading-tight tracking-tight">
-            I get small businesses funded. <br className="hidden md:block" />
-            That&apos;s it. That&apos;s the job.
-          </h2>
-        </motion.div>
-      </section>
-
-      {/* ── 2. The Inside Perspective ────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto mb-32 md:mb-48 border-t border-black/10 pt-24 md:pt-32">
-        <div className="flex flex-col md:flex-row justify-end gap-12 md:gap-24">
-          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            viewport={{ once: true }}
-            className="md:max-w-xl"
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, amount: 0.5 }}
           >
-            <div className="space-y-8 text-[17px] md:text-[19px] text-black/70 leading-relaxed font-normal">
-              <p>
-                Most bankers hand you a pamphlet and wish you luck.
-              </p>
-              <p>
-                I&apos;ve spent <strong className="text-black font-semibold">25 years on the inside</strong> — I know exactly how lenders think, what they hate, and what makes them say yes without hesitation.
-              </p>
-              <p className="text-black font-medium text-[20px] md:text-[22px]">
-                I use that knowledge to get you funded.
-              </p>
+            <h3 className="font-kiona text-[9px] sm:text-[10px] text-white tracking-[0.25em] font-medium mb-6 sm:mb-8 uppercase">
+              THE DIFFERENCE
+            </h3>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-medium tracking-tight text-white leading-[1.05] max-w-sm">
+              Why Owners Choose Me Over Every Other Banker.
+            </h2>
+            <div className="mt-10 sm:mt-12 overflow-hidden relative w-full max-w-[280px] sm:max-w-xs md:max-w-[320px] lg:max-w-sm aspect-[4/5] sm:aspect-square md:aspect-[4/3]">
+              {/* Top seamless fade mask */}
+              <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black via-black/60 to-transparent z-10 pointer-events-none" />
+              
+              <img 
+                src={splitScreenImg} 
+                alt="Ryan Kroge - The Difference" 
+                className="object-cover object-center w-full h-full opacity-85 transition-opacity duration-700 hover:opacity-100" 
+              />
+              
+              {/* Bottom seamless fade mask */}
+              <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black via-black/60 to-transparent z-10 pointer-events-none" />
             </div>
           </motion.div>
         </div>
-      </section>
 
-      {/* ── 3. Who I Am ──────────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto mb-48">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 items-start">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true }}
-          >
-            <span className="font-kiona text-[10px] text-black/40 block mb-8 tracking-[0.2em]">IDENTITY</span>
-            <h2 className="text-[2.5rem] md:text-[3.5rem] font-medium text-black leading-[1.1] tracking-tighter">
-              Who I Am
-            </h2>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="space-y-8 text-[15px] md:text-[16px] text-black/60 leading-relaxed"
-          >
-            <p>
-              I&apos;m Ryan Kroge. Small business lending specialist. Detroit-based, nationwide reach.
-            </p>
-            <p>
-              I don&apos;t push loans. I build deals — creative, well-structured deals that unlock money most business owners didn&apos;t think they could access.
-            </p>
-            <p>
-              I work with founders, operators, and buyers at every stage. Whether you&apos;re acquiring a business, expanding, or just tired of operating on fumes — I&apos;ve seen your situation before, and I know the path forward.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── 4. Why Owners Choose Me ───────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto py-32 md:py-48 border-y border-black/10">
-        <h2 className="text-[32px] md:text-[48px] font-medium text-black mb-20 tracking-tight leading-none text-center">
-          Why Owners Choose Me Over Every Other Banker
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-20">
-          {[
-            {
-              title: "I answer in 24 hours.",
-              description: "Yes or no. No \"we'll circle back.\" No radio silence for two weeks. You deserve to know where you stand — fast."
-            },
-            {
-              title: "I've been doing this for 25+ years.",
-              description: "That's not a resume flex. That's pattern recognition. I've seen what works, what doesn't, and how to structure your deal so the lender can't say no."
-            },
-            {
-              title: "I think like a lender, work like an advisor.",
-              description: "I'm on your side — but I know the other side of the table better than anyone. That perspective is worth more than any generic lending checklist."
-            },
-            {
-              title: "I'm backed by an elite team.",
-              description: "SBA financing is complex. My team has seen every edge case, exception, and creative structure in the book. You're not getting one person's opinion — you're getting decades of collective expertise."
-            }
-          ].map((item, i) => (
+        {/* Right Panel (Scrolling Cards) */}
+        <div className="md:w-[60%] flex flex-col pb-24 md:py-32 relative z-0">
+          {WHY_CHOOSE_ME_CARDS.map((card, idx) => (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
+              key={idx}
+              initial={{ opacity: 0.15, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 * i }}
-              viewport={{ once: true }}
-              className="flex flex-col gap-6"
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              viewport={{ amount: 0.5, margin: "-10% 0px -10% 0px" }}
+              className="flex flex-col justify-center min-h-[40vh] md:min-h-[70vh] border-b border-white/[0.05] last:border-b-0 py-12 md:py-0"
             >
-              <h3 className="text-[20px] md:text-[24px] font-medium text-black leading-tight border-l-2 border-[#D4AF37] pl-6">
-                {item.title}
+              <span className="font-kiona text-[#D4AF37] text-sm md:text-base tracking-[0.2em] mb-4 md:mb-6 block font-medium">
+                {card.num}
+              </span>
+              <h3 className="text-2xl sm:text-3xl md:text-4xl text-white font-medium mb-4 md:mb-6 leading-snug">
+                {card.title}
               </h3>
-              <p className="text-[15px] md:text-[16px] text-black/60 leading-relaxed pl-6">
-                {item.description}
+              <p className="text-lg sm:text-xl text-white/50 leading-[1.5] max-w-xl">
+                {card.desc}
               </p>
             </motion.div>
           ))}
         </div>
-      </section>
 
-      {/* ── 5. The 4-Step Path ───────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto py-32 md:py-48 border-b border-black/10">
-        <div className="mb-24">
-          <span className="font-kiona text-[10px] text-black/40 block mb-6 tracking-[0.2em]">PROCESS</span>
-          <h2 className="text-[32px] md:text-[56px] font-medium text-black leading-none tracking-tight">
-            The 4-Step Path to Funded
-          </h2>
-          <p className="mt-8 text-black/50 text-[16px] md:text-[18px]">No mystery. No bureaucratic black hole. Here&apos;s exactly what happens:</p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {[
-            {
-              step: "Step 1",
-              title: "The Discovery Call (30 min)",
-              content: "We talk about your business, your goals, and which loan type actually fits your situation. No fluff. Just a real conversation."
-            },
-            {
-              step: "Step 2",
-              title: "Tax Return Review",
-              content: "We pull your business and personal returns and figure out if you qualify. Honest assessment, no sugarcoating."
-            },
-            {
-              step: "Step 3",
-              title: "Personal Financial Form",
-              content: "We review your personal financial picture to confirm eligibility. If something&apos;s off, we tell you — and we tell you how to fix it."
-            },
-            {
-              step: "Step 4",
-              title: "Financial Statement Review",
-              content: "We verify the business can handle repayment. If you&apos;re ready, we move. If not, we map out what needs to happen."
-            }
-          ].map((item, i) => (
+      </div>
+    </section>
+  );
+}
+
+const FOUR_STEPS_DATA = [
+  {
+    num: "01",
+    title: "The Discovery Call (30 min)",
+    desc: "We talk about your business, your goals, and which loan type actually fits your situation. No fluff. Just a real conversation.",
+    icon: Phone
+  },
+  {
+    num: "02",
+    title: "Tax Return Review",
+    desc: "We pull your business and personal returns and figure out if you qualify. Honest assessment, no sugarcoating.",
+    icon: FileText
+  },
+  {
+    num: "03",
+    title: "Personal Financial Form",
+    desc: "We review your personal financial picture to confirm eligibility. If something's off, we tell you — and we tell you how to fix it.",
+    icon: UserCheck
+  },
+  {
+    num: "04",
+    title: "Financial Statement Review",
+    desc: "We verify the business can handle repayment. If you're ready, we move. If not, we map out what needs to happen.",
+    icon: CheckCircle
+  }
+];
+
+function FourStepsSection() {
+  return (
+    <section className="relative w-full bg-black py-24 sm:py-32 px-6 sm:px-10 lg:px-24 border-t border-white/[0.04]">
+      {/* Description Header */}
+      <div className="max-w-4xl mx-auto mb-16 sm:mb-24 text-center">
+        <h3 className="font-kiona text-[9px] sm:text-[10px] text-white tracking-[0.25em] font-medium mb-6 uppercase">
+          THE PROCESS
+        </h3>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-medium tracking-tight text-white mb-6 leading-[1.05]">
+          The 4-Step Path to Funded.
+        </h2>
+        <p className="text-lg sm:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
+          No mystery. No bureaucratic black hole. Four steps. Clear answers. No wasted time on either side.
+        </p>
+      </div>
+
+      {/* Stacking Cards Sticky Timeline */}
+      <div className="max-w-4xl mx-auto flex flex-col relative pb-[15vh]">
+        {FOUR_STEPS_DATA.map((step, index) => {
+          const Icon = step.icon;
+          // Dynamically compute the top offset so they stack sequentially like a deck of cards.
+          // Leaving approximately an inch (40px) of the top edge showing for each previous card.
+          const topOffset = `calc(15vh + ${index * 40}px)`;
+          
+          return (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
+              key={index}
+              initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 * i }}
-              viewport={{ once: true }}
-              className="flex flex-col"
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.6, delay: 0.1 * index }}
+              className="sticky w-full max-w-[260px] sm:max-w-[300px] md:max-w-[340px] mx-auto mb-16 sm:mb-20 md:mb-24 shadow-[20px_20px_60px_rgba(0,0,0,0.8),-10px_-10px_30px_rgba(255,255,255,0.02)] overflow-hidden rounded-none"
+              style={{ 
+                top: topOffset,
+                zIndex: 10 + index 
+              }}
             >
-              <span className="text-[12px] font-medium text-[#D4AF37] mb-4 uppercase tracking-widest">{item.step}</span>
-              <h4 className="text-[18px] md:text-[20px] font-medium text-black mb-6 leading-tight h-auto md:h-14">{item.title}</h4>
-              <p className="text-[14px] md:text-[15px] text-black/50 leading-relaxed font-normal">{item.content}</p>
+              {/* Card Container - Dark Smoked Glass */}
+              <div className="bg-[#0a0a0a]/60 backdrop-blur-lg border border-white/[0.08] relative w-full p-6 sm:p-8 aspect-square flex flex-col justify-between overflow-hidden">
+                
+                {/* Premium Glass Light Interaction */}
+                {/* Top Edge Highlight */}
+                <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent z-20" />
+                {/* Subtle Surface Shine */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none z-0" />
+                
+                <div className="relative z-10 flex flex-col h-full items-start justify-between">
+                   {/* Number & Tiny Icon */}
+                   <div className="flex items-center gap-2 sm:gap-3">
+                     <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#D4AF37]" strokeWidth={1.5} />
+                     <span className="font-kiona text-[9px] sm:text-[10px] text-[#D4AF37] tracking-widest pt-0.5">{step.num}</span>
+                   </div>
+                   
+                   {/* Text Content */}
+                   <div className="flex flex-col w-full">
+                     <h3 className="text-lg sm:text-xl text-white font-medium mb-1.5 sm:mb-2 tracking-tight leading-snug">
+                       {step.title}
+                     </h3>
+                     <p className="text-white/60 text-xs sm:text-sm leading-relaxed max-w-full">
+                       {step.desc}
+                     </p>
+                   </div>
+                </div>
+              </div>
             </motion.div>
-          ))}
-        </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function MissionSection() {
+  return (
+    <section className="relative w-full bg-black py-24 sm:py-32 px-6 sm:px-10 lg:px-24 border-t border-white/[0.04]">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-stretch">
         
-        <motion.p 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          viewport={{ once: true }}
-          className="mt-20 text-[18px] text-black font-medium text-center"
-        >
-          Four steps. Clear answers. No wasted time on either side.
-        </motion.p>
-      </section>
-
-      {/* ── 6. The Mission ───────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto py-32 md:py-48 text-center px-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+        {/* Left Column: Image Panel */}
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto"
+          viewport={{ once: true, amount: 0.2 }}
+          className="relative w-full min-h-[400px] md:min-h-[500px] lg:min-h-full border border-white/[0.08] overflow-hidden group"
         >
-          <span className="font-kiona text-[10px] text-black/40 block mb-10 tracking-[0.2em]">THE MISSION</span>
-          <h2 className="text-[2.5rem] md:text-[5rem] font-medium text-black leading-[1.05] tracking-tighter italic">
-            &ldquo;Get your business funded. <br className="hidden md:block" />
-            Help it grow. Repeat.&rdquo;
-          </h2>
-          <p className="mt-12 text-black/60 text-[16px] md:text-[18px] max-w-2xl mx-auto leading-relaxed">
-            Capital is the difference between a business that survives and one that scales. I&apos;ve made it my life&apos;s work to make sure more small businesses get that shot.
-          </p>
+          <img 
+            src={missionImg} 
+            alt="Ryan Kroge - The Mission" 
+            className="w-full h-full object-cover grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105"
+          />
+          {/* Subtle vignette/fade */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
         </motion.div>
-      </section>
 
-      {/* ── 7. A Bit More About Me ───────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto mb-48 bg-black/[0.02] p-12 md:p-24 border border-black/5">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <motion.div
-             initial={{ opacity: 0, x: -20 }}
-             whileInView={{ opacity: 1, x: 0 }}
-             viewport={{ once: true }}
-          >
-            <h2 className="text-[32px] md:text-[40px] font-medium text-black leading-tight mb-8">
-              A Bit More <br className="hidden md:block" />About Me
-            </h2>
-          </motion.div>
+        {/* Right Column: Content Boxes */}
+        <div className="flex flex-col gap-8 md:gap-10">
+          
+          {/* Box 1: The Mission */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            viewport={{ once: true }}
-            className="space-y-8 text-[15px] md:text-[16px] text-black/60 leading-relaxed font-normal"
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true, amount: 0.2 }}
+            className="bg-[#0a0a0a]/60 backdrop-blur-lg border border-white/[0.08] p-8 sm:p-10 flex flex-col relative overflow-hidden"
           >
-            <p>
-              I&apos;m a family man. I know what it costs to waste someone&apos;s time — and I won&apos;t do it.
-            </p>
-            <p>
-              That&apos;s why everything I do is built around speed, honesty, and results. I don&apos;t do vague timelines. I don&apos;t do fluff. I give you a real answer, a real plan, and real support from a team that actually knows what they&apos;re doing.
-            </p>
-            <p className="text-black font-medium">
-              You&apos;re not a file number here. <br />
-              You&apos;re a business owner with a real goal — and that matters.
-            </p>
+            <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
+            <h3 className="font-kiona text-[10px] text-white tracking-[0.25em] font-medium mb-8 uppercase">
+              THE MISSION
+            </h3>
+            <div className="flex flex-col gap-6">
+              <p className="text-xl sm:text-2xl text-white font-medium leading-tight tracking-tight">
+                Simple: Get your business funded. Help it grow. Repeat.
+              </p>
+              <p className="text-white/50 text-base sm:text-lg leading-relaxed font-light">
+                Capital is the difference between a business that survives and one that scales. I've made it my life's work to make sure more small businesses get that shot.
+              </p>
+            </div>
           </motion.div>
+
+          {/* Box 2: About Me + CTA */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true, amount: 0.2 }}
+            className="bg-[#0a0a0a]/60 backdrop-blur-lg border border-white/[0.08] p-8 sm:p-10 flex flex-col relative overflow-hidden flex-grow"
+          >
+            <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
+            <h3 className="font-kiona text-[10px] text-white tracking-[0.25em] font-medium mb-8 uppercase">
+              A BIT MORE ABOUT ME
+            </h3>
+            
+            <div className="flex flex-col gap-6 mb-12">
+              <p className="text-white/80 text-base sm:text-lg leading-relaxed italic border-l-2 border-[#D4AF37] pl-6 font-light">
+                "I'm a family man. I know what it costs to waste someone's time — and I won't do it."
+              </p>
+              <p className="text-white/50 text-base leading-relaxed font-light">
+                That's why everything I do is built around speed, honesty, and results. I don't do vague timelines. I don't do fluff. I give you a real answer, a real plan, and real support from a team that actually knows what they're doing.
+              </p>
+              <div className="flex flex-col gap-1">
+                <p className="text-white font-medium text-lg tracking-tight">You're not a file number here.</p>
+                <p className="text-white/60 text-base">You're a business owner with a real goal — and that matters.</p>
+              </div>
+            </div>
+
+            {/* Integrated CTA Area */}
+            <div className="mt-auto pt-10 border-t border-white/[0.05]">
+              <div className="flex flex-col gap-6">
+                <div>
+                  <p className="font-kiona text-[9px] text-[#D4AF37] tracking-[0.2em] mb-4 uppercase">Let's find out if you qualify</p>
+                  <a 
+                    href="https://ryankroge.com/contact/" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-3 text-white text-xl sm:text-2xl font-medium tracking-tight transition-opacity hover:opacity-80"
+                  >
+                    <span>Get Your Free Business Valuation</span>
+                    <span className="text-[#D4AF37] group-hover:translate-x-2 transition-transform duration-300">→</span>
+                  </a>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 pt-2">
+                  <div className="flex items-center gap-3 whitespace-nowrap">
+                    <Phone className="w-3.5 h-3.5 text-[#D4AF37]/60" />
+                    <span className="text-white/70 text-base font-light tracking-wide">248-302-4032</span>
+                  </div>
+                  <div className="hidden sm:block w-[1px] h-3 bg-white/10" />
+                  <div className="text-white/50 text-[10px] sm:text-xs font-light tracking-[0.1em] uppercase font-kiona whitespace-nowrap">
+                    Mon–Fri · 9:00 AM – 5:00 PM EST
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function About() {
+  return (
+    <div className="relative bg-black min-h-screen">
+      {/* About Hero Section */}
+      <section 
+        className="relative w-full flex flex-col items-center justify-start pt-32 sm:pt-40 min-h-[90vh] md:min-h-[100vh] lg:min-h-[110vh]"
+        id="about-hero"
+      >
+        {/* Hero Content - Sits clearly above the image */}
+        <div className="relative z-30 px-6 text-center w-full max-w-4xl mx-auto flex flex-col items-center mb-0 sm:mb-2">
+          <motion.span 
+            initial={{ opacity: 0, y: 10 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }} 
+            className="font-kiona text-[9px] sm:text-[10px] text-white tracking-[0.25em] mb-6 block uppercase"
+          >
+            Small Business Lending Specialist
+          </motion.span>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 15 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ duration: 0.9, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }} 
+            className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] font-medium text-white leading-[1.05] tracking-tight"
+          >
+            Hi, I’m Ryan.<br />
+            I get small businesses funded
+          </motion.h1>
+        </div>
+
+        {/* Image Container - Full width, closer to text, taller height to show more body */}
+        <div className="relative z-10 w-full flex-grow flex flex-col justify-end items-center overflow-hidden -mt-8 sm:-mt-12 md:-mt-20 lg:-mt-24 pointer-events-none">
+          <div className="relative w-full h-[85vh] sm:h-[95vh] md:h-[110vh] lg:h-[125vh]">
+            <motion.img 
+              src={heroImg} 
+              alt="Ryan Kroge - Portrait" 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              transition={{ duration: 1.6, delay: 0.2, ease: "easeOut" }} 
+              className="absolute inset-0 w-full h-full object-cover object-[50%_15%]" 
+            />
+            
+            {/* Top fade: Full black at the top grading smoothly into the image */}
+            <div className="absolute inset-x-0 top-0 h-40 sm:h-56 md:h-64 bg-gradient-to-b from-black via-black/80 to-transparent pointer-events-none" />
+            
+            {/* Bottom fade: Smoothly fades into the solid black of the subsequent section */}
+            <div className="absolute inset-x-0 bottom-0 h-32 sm:h-48 md:h-64 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
+          </div>
         </div>
       </section>
 
-      {/* ── 8. Final CTA ───────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto mb-48 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto"
-        >
-          <h2 className="text-[2.5rem] md:text-[3.5rem] font-medium text-black leading-tight tracking-tight mb-12">
-            Let&apos;s Find Out If You Qualify
-          </h2>
-          
-          <div className="flex flex-col items-center gap-10">
-            <a 
-              href="https://ryankroge.com/contact/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="group w-full sm:w-auto font-kiona text-[12px] bg-black text-white px-12 py-6 hover:bg-[#D4AF37] transition-all duration-300 flex items-center justify-center gap-4 tracking-widest"
-            >
-              GET YOUR FREE BUSINESS VALUATION <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </a>
+      {/* Spacer before text reveal (Reduced to bring closer to the image) */}
+      <div className="h-[10vh] sm:h-[15vh] w-full bg-black pointer-events-none" />
 
-            <div className="flex flex-col sm:flex-row items-center gap-8 md:gap-16 pt-8 border-t border-black/10 w-full justify-center">
-              <div className="flex items-center gap-4 text-black">
-                <Phone size={20} className="text-[#D4AF37]" />
-                <span className="text-[18px] font-medium">248-302-4032</span>
-              </div>
-              <div className="flex items-center gap-4 text-black/60">
-                <Clock size={20} className="text-[#D4AF37]/60" />
-                <span className="text-[14px]">Mon&ndash;Fri &middot; 9:00 AM &ndash; 5:00 PM EST</span>
-              </div>
-            </div>
-          </div>
+      {/* Scroll-Triggered Text Reveal Section */}
+      <section className="relative w-full px-6 pt-20 pb-8 sm:pb-12 bg-black flex flex-col items-center justify-center">
+        <div className="w-full flex flex-col items-center space-y-2 sm:space-y-4">
+          <RevealLine>Most bankers hand you a pamphlet</RevealLine>
+          <RevealLine>and wish you luck.</RevealLine>
           
-          <p className="mt-24 font-kiona text-[10px] text-black/30 tracking-[0.2em] italic">
-            Ryan Kroge &middot; Small Business Lending Specialist &middot; Detroit, MI &middot; Serving Clients Nationwide
-          </p>
-        </motion.div>
+          <RevealLine isSpace />
+          
+          <RevealLine>
+            I've spent <span className="text-white font-normal">25 years on the inside,</span>
+          </RevealLine>
+          <RevealLine>I know exactly how lenders think,</RevealLine>
+          <RevealLine>what they hate, and what makes</RevealLine>
+          <RevealLine>them say yes without hesitation.</RevealLine>
+
+          <RevealLine isSpace />
+
+          <RevealLine>I use that knowledge to get you funded.</RevealLine>
+        </div>
       </section>
+
+      {/* Spacer after text reveal */}
+      <div className="h-[8vh] sm:h-[12vh] w-full bg-black pointer-events-none" />
+
+      {/* New Editorial 'Who I Am' Section */}
+      <WhoIAmSection />
+      
+      {/* Scroll-Snap Sticky Split Screen Section */}
+      <WhyChooseMeSection />
+      
+      {/* 4-Step Sticky Glassmorphism Stack */}
+      <FourStepsSection />
+      
+      {/* New Mission / About / CTA Section */}
+      <MissionSection />
+      
     </div>
   );
 }
