@@ -69,10 +69,10 @@ export default async function handler(req, res) {
     });
 
     const booking = await bookingRes.json();
-    console.log(`[book-slot] Cal.com response status: ${bookingRes.status}`, JSON.stringify(booking).slice(0, 300));
+    console.log(`[book-slot] Cal.com response status: ${bookingRes.status}`);
 
     if (!bookingRes.ok || booking.status === "error") {
-      console.error("[book-slot] Booking failed:", JSON.stringify(booking));
+      console.error("[book-slot] Booking failed — status:", booking.status, "message:", booking.message ?? booking.error ?? "");
       return res.status(200).json({
         error: "booking_failed",
         spoken: "I hit a snag completing the booking. I've captured your preferred time and Ryan will reach out to confirm everything with you personally.",

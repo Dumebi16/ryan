@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     console.log(`[get-slots] Cal.com response status: ${calRes.status}`);
 
     if (!calRes.ok || data.status === "error") {
-      console.error("[get-slots] Cal.com error:", JSON.stringify(data));
+      console.error("[get-slots] Cal.com error — status:", data.status, "message:", data.message ?? data.error ?? "");
       return res.status(200).json({
         error: "calendar_unavailable",
         spoken: "I'm having trouble pulling up Ryan's live calendar right now. Let me get your contact details and he'll reach out to confirm a time with you directly.",

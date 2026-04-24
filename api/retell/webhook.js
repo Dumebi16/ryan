@@ -22,7 +22,7 @@ async function sendSMS(accountSid, authToken, to, body) {
     }
   );
   const data = await resp.json();
-  if (!resp.ok) console.error("SMS error:", data);
+  if (!resp.ok) console.error("[webhook] SMS send failed — status:", data.status, "code:", data.code ?? "");
   return data;
 }
 
