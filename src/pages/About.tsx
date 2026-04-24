@@ -393,7 +393,7 @@ function MissionSection() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 pt-2">
                   <div className="flex items-center gap-3 whitespace-nowrap">
                     <Phone className="w-3.5 h-3.5 text-[#D4AF37]/60" />
-                    <span className="text-white/70 text-base font-light tracking-wide">248-302-4032</span>
+                    <span className="text-white/70 text-base font-light tracking-wide">(947) 218-1845</span>
                   </div>
                   <div className="hidden sm:block w-[1px] h-3 bg-white/10" />
                   <div className="text-white/50 text-[10px] sm:text-xs font-light tracking-[0.1em] uppercase font-kiona whitespace-nowrap">
