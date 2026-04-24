@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown, Phone, Calendar } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export const Navbar = () => {
@@ -32,11 +32,22 @@ export const Navbar = () => {
     setIsMenuOpen(false);
   }, [location]);
 
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+
+  // Updated navigation structure
   const navLinks = [
-    { name: 'Home', path: '/' },
     { name: 'About', path: '/about' },
-    { name: 'SBA Loans', path: '#sba-loans' },
-    { name: 'Blog', path: '#blog' },
+    { 
+      name: 'Services', 
+      path: '#services',
+      dropdown: [
+        { name: 'SBA Loans', path: '/sba-loans' },
+        { name: 'Business Acquisition', path: '/business-acquisition' },
+        { name: 'Strategic Financial Guidance', path: '/strategic-financial-guidance' },
+      ]
+    },
+    { name: 'Resources', path: '#blog' }, // Keeping #blog as target for now or update if section exists
+    { name: 'Contact', path: '/contact' },
   ];
 
   return (
@@ -76,26 +87,88 @@ export const Navbar = () => {
           {/* Desktop links */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((item) => (
-              item.path.startsWith('#') ? (
-                <a key={item.name} href={item.path} className="font-kiona text-[10px] text-white/90 hover:text-primary transition-colors">
-                  {item.name}
-                </a>
+              item.dropdown ? (
+                <div 
+                  key={item.name} 
+                  className="relative group py-2"
+                  onMouseEnter={() => setIsServicesOpen(true)}
+                  onMouseLeave={() => setIsServicesOpen(false)}
+                >
+                  <button className="flex items-center gap-1 font-kiona text-[10px] text-white/90 hover:text-primary transition-colors cursor-pointer outline-none">
+                    {item.name}
+                    <motion.div
+                      animate={{ rotate: isServicesOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronDown size={10} strokeWidth={2} />
+                    </motion.div>
+                  </button>
+                  
+                  <AnimatePresence>
+                    {isServicesOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute left-0 mt-4 w-56 bg-black/90 backdrop-blur-xl border border-white/10 p-2 shadow-2xl z-50 overflow-hidden"
+                      >
+                        {item.dropdown.map((sub) => (
+                          sub.path.startsWith('/#') ? (
+                            <a
+                              key={sub.name}
+                              href={sub.path}
+                              className="block px-4 py-3 font-kiona text-[9px] text-white/70 hover:text-white hover:bg-white/5 transition-all tracking-wider"
+                              onClick={() => setIsServicesOpen(false)}
+                            >
+                              {sub.name}
+                            </a>
+                          ) : (
+                            <Link
+                              key={sub.name}
+                              to={sub.path}
+                              className="block px-4 py-3 font-kiona text-[9px] text-white/70 hover:text-white hover:bg-white/5 transition-all tracking-wider"
+                              onClick={() => setIsServicesOpen(false)}
+                            >
+                              {sub.name}
+                            </Link>
+                          )
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : (
-                <Link key={item.name} to={item.path} className="font-kiona text-[10px] text-white/90 hover:text-primary transition-colors">
-                  {item.name}
-                </Link>
+                item.path.startsWith('#') ? (
+                  <a key={item.name} href={item.path} className="font-kiona text-[10px] text-white/90 hover:text-primary transition-colors">
+                    {item.name}
+                  </a>
+                ) : (
+                  <Link key={item.name} to={item.path} className="font-kiona text-[10px] text-white/90 hover:text-primary transition-colors">
+                    {item.name}
+                  </Link>
+                )
               )
             ))}
           </div>
 
           {/* Right actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            <a href="tel:+19472181845" className="hidden lg:flex items-center gap-2 font-kiona text-[10px] text-white/60 hover:text-white transition-colors">
+              <Phone size={12} strokeWidth={2} />
+              (947) 218-1845
+            </a>
             <button className="hidden md:block font-kiona text-[11px] border border-white/20 px-8 py-3 hover:bg-white hover:text-black hover:border-white transition-all duration-300">
               SCHEDULE A CALL
             </button>
-            <button className="md:hidden p-2 text-white hover:text-primary transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
-              {isMenuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
-            </button>
+            <div className="md:hidden flex items-center gap-3">
+              <a href="#contact" className="text-white hover:text-primary transition-all hover:scale-105" aria-label="Schedule">
+                <Calendar size={20} strokeWidth={1.5} />
+              </a>
+              <button className="text-white hover:text-primary transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
+                {isMenuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
+              </button>
+            </div>
           </div>
         </motion.nav>
       </div>
@@ -123,23 +196,51 @@ export const Navbar = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 + i * 0.05 }}
+                    className="w-full text-center"
                   >
-                    {item.path.startsWith('#') ? (
-                      <a
-                        href={item.path}
-                        className="font-kiona text-lg text-white/80 hover:text-primary transition-colors tracking-[0.4em]"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        {item.name}
-                      </a>
+                    {item.dropdown ? (
+                      <div className="flex flex-col space-y-4">
+                        <span className="font-kiona text-[10px] text-white/40 tracking-[0.4em] mb-2">SERVICES</span>
+                        {item.dropdown.map((sub) => (
+                          sub.path.startsWith('/#') ? (
+                            <a
+                              key={sub.name}
+                              href={sub.path}
+                              className="font-kiona text-base text-white/80 hover:text-primary transition-colors tracking-[0.3em] block"
+                              onClick={() => setIsMenuOpen(false)}
+                            >
+                              {sub.name}
+                            </a>
+                          ) : (
+                            <Link
+                              key={sub.name}
+                              to={sub.path}
+                              className="font-kiona text-base text-white/80 hover:text-primary transition-colors tracking-[0.3em] block"
+                              onClick={() => setIsMenuOpen(false)}
+                            >
+                              {sub.name}
+                            </Link>
+                          )
+                        ))}
+                      </div>
                     ) : (
-                      <Link
-                        to={item.path}
-                        className="font-kiona text-lg text-white/80 hover:text-primary transition-colors tracking-[0.4em]"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
+                      item.path.startsWith('#') ? (
+                        <a
+                          href={item.path}
+                          className="font-kiona text-lg text-white/80 hover:text-primary transition-colors tracking-[0.4em]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {item.name}
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.path}
+                          className="font-kiona text-lg text-white/80 hover:text-primary transition-colors tracking-[0.4em]"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {item.name}
+                        </Link>
+                      )
                     )}
                   </motion.div>
                 ))}

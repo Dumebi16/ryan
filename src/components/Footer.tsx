@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
-    <footer className="bg-black border-t border-white/[0.08] px-6 sm:px-10 lg:px-24 pt-16 md:pt-20 pb-8">
+    <footer id="contact" className="bg-black border-t border-white/[0.08] px-6 sm:px-10 lg:px-24 pt-16 md:pt-20 pb-8">
       {/* ── Main grid ───────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 pb-14 border-b border-white/[0.06]">
         {/* Brand block */}
@@ -92,10 +92,10 @@ export const Footer = () => {
               hello@ryankroge.com
             </a>
             <a
-              href="tel:2483024032"
+              href="tel:+19472181845"
               className="text-[13px] text-white/45 hover:text-white/85 transition-colors duration-200 leading-none"
             >
-              248-302-4032
+              (947) 218-1845
             </a>
             <span className="text-[13px] text-white/45 leading-none">
               Detroit, Michigan
