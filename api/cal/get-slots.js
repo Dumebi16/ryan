@@ -68,15 +68,29 @@ export default async function handler(req, res) {
     const slotsByDay = data.data ?? {};
     const available = [];
 
+    // Pick one morning slot (before noon) and one afternoon slot (noon+) per day
+    // across up to 5 days so the caller always hears both options.
     for (const [day, times] of Object.entries(slotsByDay)) {
-      if (!Array.isArray(times)) continue;
-      for (const slot of times.slice(0, 3)) {
+      if (!Array.isArray(times) || times.length === 0) continue;
+
+      let morning = null;
+      let afternoon = null;
+
+      for (const slot of times) {
         const isoTime = slot.start ?? slot.time;
         if (!isoTime) continue;
-        available.push({ date: day, time: isoTime, formatted: fmtSlot(isoTime) });
-        if (available.length >= 6) break;
+        const hour = new Date(isoTime).getUTCHours() + (new Date(isoTime).getTimezoneOffset() === 0
+          ? -4 : 0); // rough ET offset; Cal.com returns local-offset ISO strings
+        const localHour = new Date(isoTime).toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: TZ });
+        const h = parseInt(localHour, 10);
+        if (h < 12 && !morning) morning = { date: day, time: isoTime, formatted: fmtSlot(isoTime) };
+        if (h >= 12 && !afternoon) afternoon = { date: day, time: isoTime, formatted: fmtSlot(isoTime) };
+        if (morning && afternoon) break;
       }
-      if (available.length >= 6) break;
+
+      if (morning) available.push(morning);
+      if (afternoon) available.push(afternoon);
+      if (available.length >= 10) break;
     }
 
     console.log(`[get-slots] Found ${available.length} available slots`);
@@ -89,12 +103,13 @@ export default async function handler(req, res) {
       });
     }
 
+    // Read back first 3 options (mix of morning and afternoon)
     const readBack = available.slice(0, 3).map((s) => s.formatted).join("; ");
 
     return res.status(200).json({
       available_slots: available,
       count: available.length,
-      spoken: `I have a few openings for you. ${readBack}. Which of those works best for you?`,
+      spoken: `I have openings available. ${readBack}. I have both morning and afternoon slots — which works best for you?`,
     });
   } catch (err) {
     console.error("[get-slots] Unexpected error:", err);
