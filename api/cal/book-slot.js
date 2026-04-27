@@ -40,9 +40,12 @@ export default async function handler(req, res) {
   }
   const { name, email, phone, start_time, notes } = rawBody;
 
-  if (!name || !email || !start_time) {
-    console.error("[book-slot] Missing required fields:", { name: !!name, email: !!email, start_time: !!start_time });
-    return res.status(400).json({ error: "name, email, and start_time are required." });
+  // Email is optional — use placeholder so callers never have to provide it
+  const resolvedEmail = (email ?? "").trim() || "booking@ryan-kroge-sba.com";
+
+  if (!name || !start_time) {
+    console.error("[book-slot] Missing required fields:", { name: !!name, start_time: !!start_time });
+    return res.status(400).json({ error: "name and start_time are required." });
   }
 
   try {
@@ -53,7 +56,7 @@ export default async function handler(req, res) {
       start: start_time,
       attendee: {
         name: name.trim(),
-        email: email.trim(),
+        email: resolvedEmail,
         timeZone: TZ,
         language: "en",
         ...(phone ? { phoneNumber: phone.trim() } : {}),
@@ -95,7 +98,7 @@ export default async function handler(req, res) {
       booking_id: uid,
       start_time,
       formatted_time: formattedTime,
-      spoken: `You're all set. I've booked your 30-minute consultation with Ryan Kroge for ${formattedTime} Eastern time. You'll receive a calendar confirmation at ${email}. Is there anything else before we wrap up?`,
+      spoken: `You're all set. I've booked your 30-minute consultation with Ryan Kroge for ${formattedTime} Eastern time. Ryan will follow up with you to confirm. Is there anything else before we wrap up?`,
     });
   } catch (err) {
     console.error("[book-slot] Unexpected error:", err);
