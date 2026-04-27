@@ -33,7 +33,12 @@ export default async function handler(req, res) {
     });
   }
 
-  const { name, email, phone, start_time, notes } = req.body ?? {};
+  // Parse body defensively — Vercel may deliver it as a parsed object or raw string
+  let rawBody = req.body ?? {};
+  if (typeof rawBody === "string") {
+    try { rawBody = JSON.parse(rawBody); } catch { rawBody = {}; }
+  }
+  const { name, email, phone, start_time, notes } = rawBody;
 
   if (!name || !email || !start_time) {
     console.error("[book-slot] Missing required fields:", { name: !!name, email: !!email, start_time: !!start_time });
