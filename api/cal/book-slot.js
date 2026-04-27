@@ -50,6 +50,7 @@ export default async function handler(req, res) {
         name: name.trim(),
         email: email.trim(),
         timeZone: TZ,
+        language: "en",
         ...(phone ? { phoneNumber: phone.trim() } : {}),
       },
       metadata: {
@@ -63,7 +64,7 @@ export default async function handler(req, res) {
       headers: {
         Authorization: `Bearer ${CAL_API_KEY}`,
         "Content-Type": "application/json",
-        "cal-api-version": "2020-11-17",
+        "cal-api-version": "2024-08-13",
       },
       body: JSON.stringify(bookingBody),
     });
