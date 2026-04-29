@@ -8,3 +8,6 @@ coverage/
 !.env.example
 .vercel
 website-cloner-mcp/
+test-*.js
+test-*.png
+test_*.js

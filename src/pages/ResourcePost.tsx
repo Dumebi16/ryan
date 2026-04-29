@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -8,6 +8,8 @@ import { supabase } from "../lib/supabase";
 
 export default function ResourcePost() {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const isPreview = searchParams.get("preview") === "true";
   const [post, setPost] = useState<any>(null);
   const [faqs, setFaqs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,17 @@ export default function ResourcePost() {
   useEffect(() => {
     async function fetchPost() {
       if (!slug) return;
-      
+
+      // Preview mode: only authenticated admins can view drafts
+      if (isPreview) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          setPost(null);
+          setLoading(false);
+          return;
+        }
+      }
+
       const { data, error } = await supabase
         .from("posts")
         .select("*")
@@ -66,6 +78,12 @@ export default function ResourcePost() {
 
   return (
     <div className="bg-[#0a0a0a] min-h-screen text-white/90 selection:bg-[#D4AF37] selection:text-black">
+      {isPreview && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-[#D4AF37] text-black text-center text-[10px] font-kiona uppercase tracking-widest py-2 flex items-center justify-center gap-6">
+          <span>Preview Mode — This article is not publicly visible</span>
+          <button onClick={() => window.close()} className="underline opacity-70 hover:opacity-100">Close Preview</button>
+        </div>
+      )}
       <Helmet>
         <title>{post.meta_title || post.title}</title>
         <meta name="description" content={post.meta_description || post.excerpt} />
@@ -133,7 +151,7 @@ export default function ResourcePost() {
       </Helmet>
 
       {/* Hero Section */}
-      <div className="relative pt-32 md:pt-48 pb-16 px-6">
+      <div className={`relative pb-16 px-6 ${isPreview ? 'pt-16 md:pt-24' : 'pt-32 md:pt-48'}`}>
         <div className="max-w-4xl mx-auto">
           <Link to="/resources" className="inline-flex items-center gap-2 text-white/50 hover:text-[#D4AF37] transition-colors tracking-widest font-kiona uppercase text-[10px] mb-12">
             <ArrowLeft className="w-3 h-3" /> Back to all insights
@@ -185,7 +203,11 @@ export default function ResourcePost() {
 
       {/* Content */}
       <div className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg prose-headings:font-light prose-a:text-[#D4AF37] prose-a:no-underline hover:prose-a:underline">
-        <ReactMarkdown>{post.markdown_content || ""}</ReactMarkdown>
+        {post.markdown_content?.trimStart().startsWith('<') ? (
+          <div dangerouslySetInnerHTML={{ __html: post.markdown_content }} />
+        ) : (
+          <ReactMarkdown>{post.markdown_content || ""}</ReactMarkdown>
+        )}
       </div>
 
       {/* FAQs */}
