@@ -5,7 +5,7 @@ import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import Suggestion from '@tiptap/suggestion';
-import { Bold, Italic, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Image as ImageIcon, Link as LinkIcon, Minus, X } from 'lucide-react';
+import { Bold, Italic, List, ListOrdered, Image as ImageIcon, Link as LinkIcon, Minus, X, ChevronDown } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // ─── Upload helper ─────────────────────────────────────────────────────────────
@@ -245,11 +245,36 @@ function createSlashExtension() {
   });
 }
 
+// ─── Block type label ─────────────────────────────────────────────────────────
+
+function getBlockType(editor: any): string {
+  if (editor.isActive('heading', { level: 1 })) return 'Heading 1';
+  if (editor.isActive('heading', { level: 2 })) return 'Heading 2';
+  if (editor.isActive('heading', { level: 3 })) return 'Heading 3';
+  if (editor.isActive('blockquote')) return 'Quote';
+  if (editor.isActive('bulletList')) return 'Bullet';
+  if (editor.isActive('orderedList')) return 'Numbered';
+  if (editor.isActive('codeBlock')) return 'Code';
+  return 'Paragraph';
+}
+
 // ─── Toolbar ──────────────────────────────────────────────────────────────────
 
 const MenuBar = ({ editor, onImageUpload }: { editor: any; onImageUpload: () => void }) => {
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const close = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node))
+        setDropdownOpen(false);
+    };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [dropdownOpen]);
 
   const applyLink = useCallback(() => {
     if (linkUrl.trim()) {
@@ -263,22 +288,60 @@ const MenuBar = ({ editor, onImageUpload }: { editor: any; onImageUpload: () => 
 
   const cmd = (fn: () => void) => (e: React.MouseEvent) => { e.preventDefault(); fn(); };
   const active = (name: string, attrs?: any) => editor.isActive(name, attrs);
+  // Active buttons get a gold ring + background so they're unmistakable
   const cls = (name: string, attrs?: any) =>
-    `p-2 hover:bg-white/10 transition-colors ${active(name, attrs) ? 'text-[#D4AF37] bg-white/5' : 'text-white/60'}`;
+    `p-2 transition-colors ${active(name, attrs)
+      ? 'text-[#D4AF37] bg-[#D4AF37]/10 ring-1 ring-[#D4AF37]/30'
+      : 'text-white/60 hover:text-white hover:bg-white/10'}`;
+
+  const blockType = getBlockType(editor);
+
+  const BLOCK_OPTIONS = [
+    { label: 'Paragraph', cmd: () => editor.chain().focus().setParagraph().run() },
+    { label: 'Heading 1', cmd: () => editor.chain().focus().toggleHeading({ level: 1 }).run() },
+    { label: 'Heading 2', cmd: () => editor.chain().focus().toggleHeading({ level: 2 }).run() },
+    { label: 'Heading 3', cmd: () => editor.chain().focus().toggleHeading({ level: 3 }).run() },
+    { label: 'Quote',     cmd: () => editor.chain().focus().toggleBlockquote().run() },
+  ];
 
   return (
-    <div className="sticky top-0 z-10 border-b border-white/10 bg-[#0a0a0a]/95 backdrop-blur-md">
+    <div className="border-b border-white/10 bg-[#0a0a0a]">
       <div className="flex flex-wrap items-center gap-0.5 p-2">
+        {/* Block type dropdown — reflects cursor position, allows changing format */}
+        <div ref={dropdownRef} className="relative mr-2">
+          <button
+            type="button"
+            onMouseDown={e => { e.preventDefault(); setDropdownOpen(v => !v); }}
+            className="flex items-center gap-2 px-3 py-1.5 text-[11px] font-kiona uppercase tracking-widest text-white/70 hover:text-white bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 transition-colors min-w-[110px] justify-between"
+          >
+            <span>{blockType}</span>
+            <ChevronDown size={11} className={`transition-transform duration-150 ${dropdownOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {dropdownOpen && (
+            <div className="absolute top-full left-0 mt-1 bg-[#111] border border-white/10 shadow-xl z-50 min-w-[140px]">
+              {BLOCK_OPTIONS.map(opt => (
+                <button
+                  key={opt.label}
+                  type="button"
+                  onMouseDown={e => { e.preventDefault(); opt.cmd(); setDropdownOpen(false); }}
+                  className={`w-full text-left px-4 py-2.5 text-xs font-sans transition-colors ${
+                    blockType === opt.label
+                      ? 'text-[#D4AF37] bg-[#D4AF37]/5'
+                      : 'text-white/60 hover:text-white hover:bg-white/[0.05]'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <button type="button" onMouseDown={cmd(() => editor.chain().focus().toggleBold().run())} className={cls('bold')} title="Bold (Cmd+B)"><Bold size={15} /></button>
         <button type="button" onMouseDown={cmd(() => editor.chain().focus().toggleItalic().run())} className={cls('italic')} title="Italic (Cmd+I)"><Italic size={15} /></button>
         <div className="w-px h-4 bg-white/10 mx-1" />
-        <button type="button" onMouseDown={cmd(() => editor.chain().focus().toggleHeading({ level: 1 }).run())} className={cls('heading', { level: 1 })} title="Heading 1"><Heading1 size={15} /></button>
-        <button type="button" onMouseDown={cmd(() => editor.chain().focus().toggleHeading({ level: 2 }).run())} className={cls('heading', { level: 2 })} title="Heading 2"><Heading2 size={15} /></button>
-        <button type="button" onMouseDown={cmd(() => editor.chain().focus().toggleHeading({ level: 3 }).run())} className={cls('heading', { level: 3 })} title="Heading 3"><Heading3 size={15} /></button>
-        <div className="w-px h-4 bg-white/10 mx-1" />
         <button type="button" onMouseDown={cmd(() => editor.chain().focus().toggleBulletList().run())} className={cls('bulletList')} title="Bullet List"><List size={15} /></button>
         <button type="button" onMouseDown={cmd(() => editor.chain().focus().toggleOrderedList().run())} className={cls('orderedList')} title="Numbered List"><ListOrdered size={15} /></button>
-        <button type="button" onMouseDown={cmd(() => editor.chain().focus().toggleBlockquote().run())} className={cls('blockquote')} title="Quote"><Quote size={15} /></button>
         <button type="button" onMouseDown={cmd(() => editor.chain().focus().setHorizontalRule().run())} className="p-2 hover:bg-white/10 transition-colors text-white/60" title="Divider"><Minus size={15} /></button>
         <div className="w-px h-4 bg-white/10 mx-1" />
         <button
@@ -398,9 +461,14 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
   }, [editor]);
 
   return (
-    <div className="border border-white/10 bg-[#0a0a0a] min-h-[500px] flex flex-col focus-within:border-[#D4AF37]/30 transition-colors">
+    // The editor uses its own height + internal scroll so the toolbar is ALWAYS visible.
+    // CSS sticky cannot be used here because an ancestor has overflow:hidden which breaks it.
+    <div
+      className="border border-white/10 bg-[#0a0a0a] flex flex-col focus-within:border-[#D4AF37]/30 transition-colors"
+      style={{ height: 'clamp(440px, calc(100vh - 330px), 880px)' }}
+    >
       <MenuBar editor={editor} onImageUpload={handleImageUpload} />
-      <div className="flex-1 cursor-text overflow-y-auto" onClick={() => editor?.chain().focus().run()}>
+      <div className="flex-1 min-h-0 overflow-y-auto cursor-text" onClick={() => editor?.chain().focus().run()}>
         <EditorContent editor={editor} />
       </div>
       <style dangerouslySetInnerHTML={{ __html: `

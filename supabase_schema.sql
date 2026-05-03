@@ -129,3 +129,151 @@ CREATE POLICY "Public can read images"
   ON storage.objects FOR SELECT
   TO public
   USING (bucket_id = 'images');
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- LEADS TABLE  (Supabase as CRM)
+-- Stores every contact form submission. n8n / Edge Functions read from here.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+CREATE TABLE leads (
+  id                   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at           timestamptz DEFAULT now(),
+
+  -- Contact info
+  first_name           text NOT NULL,
+  last_name            text NOT NULL,
+  email                text NOT NULL,
+  phone                text,
+
+  -- Enquiry
+  inquiry_type         text,   -- 'buy' | 'sell' | 'sba' | 'guidance' | 'exploring' | 'other'
+  message              text,
+
+  -- Marketing
+  source               text DEFAULT 'contact_form',
+  subscribe_newsletter boolean DEFAULT false,
+
+  -- Workflow status (flipped by Edge Functions / n8n)
+  confirmation_sent    boolean DEFAULT false,
+  beehiiv_subscribed   boolean DEFAULT false,
+
+  -- CRM notes (admin can fill these in later)
+  status               text DEFAULT 'new',   -- 'new' | 'contacted' | 'qualified' | 'closed'
+  notes                text,
+
+  -- Spam prevention
+  CONSTRAINT valid_email_format CHECK (
+    email ~* '^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$'
+  ),
+  CONSTRAINT first_name_not_empty CHECK (trim(first_name) <> ''),
+  CONSTRAINT last_name_not_empty  CHECK (trim(last_name)  <> ''),
+  CONSTRAINT message_min_length   CHECK (length(trim(coalesce(message, ''))) >= 10)
+);
+
+-- ── Rate limit function ───────────────────────────────────────────────────────
+-- Blocks more than 3 submissions from the same email within any rolling 1-hour window.
+-- Used inside the INSERT RLS policy so enforcement happens at the database level,
+-- regardless of what the frontend does.
+CREATE OR REPLACE FUNCTION is_lead_rate_limited(p_email text)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+AS $$
+  SELECT COUNT(*) >= 3
+  FROM leads
+  WHERE lower(email) = lower(p_email)
+    AND created_at > now() - interval '1 hour';
+$$;
+
+-- RLS: public can INSERT only when email is valid + not rate-limited
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can submit a lead"
+  ON leads FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (
+    -- Email format (redundant with CHECK constraint but explicit in policy too)
+    email ~* '^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$'
+    -- Rate limit: max 3 per email per rolling hour
+    AND NOT is_lead_rate_limited(email)
+  );
+
+CREATE POLICY "Admins can read and manage leads"
+  ON leads FOR ALL
+  TO authenticated
+  USING (auth.role() = 'authenticated');
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- NEWSLETTER SUBSCRIBERS TABLE
+-- Separate from leads — blog readers who subscribe via the article footer embed.
+-- ─────────────────────────────────────────────────────────────────────────────
+
+CREATE TABLE newsletter_subscribers (
+  id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at         timestamptz DEFAULT now(),
+  email              text UNIQUE NOT NULL,
+  source             text DEFAULT 'blog',       -- 'blog' | 'contact_form'
+  post_slug          text,                      -- which article they subscribed from
+  referrer           text,                      -- document.referrer at time of subscribe
+  status             text DEFAULT 'active',     -- 'active' | 'unsubscribed'
+  beehiiv_subscribed boolean DEFAULT false
+);
+
+ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can subscribe to newsletter"
+  ON newsletter_subscribers FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+
+CREATE POLICY "Admins can read newsletter subscribers"
+  ON newsletter_subscribers FOR ALL
+  TO authenticated
+  USING (auth.role() = 'authenticated');
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- ANALYTICS EVENTS TABLE
+-- Tracks post_view, post_read, and cta_click events from the public blog.
+-- Powers the CMS analytics dashboard. Separate from GA4 (which handles
+-- traffic sources and search console data).
+-- ─────────────────────────────────────────────────────────────────────────────
+
+CREATE TABLE analytics_events (
+  id            uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at    timestamptz DEFAULT now(),
+
+  -- What happened
+  event_type    text        NOT NULL
+    CHECK (event_type IN ('post_view', 'post_read', 'cta_click')),
+
+  -- Which post
+  post_id       uuid        REFERENCES posts(id) ON DELETE SET NULL,
+  post_slug     text,
+  category      text,
+
+  -- Session context (anonymous; no PII stored)
+  session_id    text,
+  referrer      text,
+
+  -- Only populated for post_read events
+  time_on_page  integer     -- seconds from page load to 75% scroll
+);
+
+CREATE INDEX idx_analytics_post_id    ON analytics_events(post_id);
+CREATE INDEX idx_analytics_event_type ON analytics_events(event_type);
+CREATE INDEX idx_analytics_created_at ON analytics_events(created_at);
+
+ALTER TABLE analytics_events ENABLE ROW LEVEL SECURITY;
+
+-- Public readers (anon) can write events — no auth required for tracking
+CREATE POLICY "Public can insert analytics events"
+  ON analytics_events FOR INSERT
+  TO anon, authenticated
+  WITH CHECK (true);
+
+-- Only admins can read the data
+CREATE POLICY "Admins can read analytics events"
+  ON analytics_events FOR SELECT
+  TO authenticated
+  USING (auth.role() = 'authenticated');

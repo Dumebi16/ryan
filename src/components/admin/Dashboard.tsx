@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import { Plus, ArrowUpRight } from "lucide-react";
 import { formatDate } from "../../lib/utils";
+import { supabase } from "../../lib/supabase";
 
 interface DashboardProps {
   drafts: any[];
@@ -9,6 +11,40 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ drafts, published, onNewPost, onOpenPost }: DashboardProps) {
+  const [totalViews, setTotalViews] = useState<number | null>(null);
+  const [readRatio, setReadRatio] = useState<number | null>(null);
+
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  async function loadStats() {
+    const { data } = await supabase
+      .from("analytics_events")
+      .select("event_type");
+
+    if (!data) return;
+    const views = data.filter(e => e.event_type === "post_view").length;
+    const reads = data.filter(e => e.event_type === "post_read").length;
+    setTotalViews(views);
+    setReadRatio(views > 0 ? Math.round((reads / views) * 100) : 0);
+  }
+
+  const stats = [
+    {
+      label: "Total Views",
+      val: totalViews === null ? "—" : totalViews.toLocaleString(),
+      sub: totalViews === null ? "Loading..." : "All-time page views",
+    },
+    { label: "Published Content", val: published.length.toString(), sub: "Live articles" },
+    { label: "Pending Drafts", val: drafts.length.toString(), sub: "Awaiting action" },
+    {
+      label: "Avg Read Ratio",
+      val: readRatio === null ? "—" : `${readRatio}%`,
+      sub: readRatio === null ? "Loading..." : "Reads per view",
+    },
+  ];
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 max-w-6xl mx-auto py-12 px-8">
       <div className="flex justify-between items-end mb-10">
@@ -26,12 +62,7 @@ export default function Dashboard({ drafts, published, onNewPost, onOpenPost }: 
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-        {[
-          { label: "Total Views", val: "—", sub: "Connect analytics to see insights" },
-          { label: "Published Content", val: published.length.toString(), sub: "Live articles" },
-          { label: "Pending Drafts", val: drafts.length.toString(), sub: "Awaiting action" },
-          { label: "Avg Read Ratio", val: "—", sub: "Awaiting sufficient data" },
-        ].map((stat, i) => (
+        {stats.map((stat, i) => (
           <div key={i} className="bg-white/[0.02] border border-white/10 p-6 relative overflow-hidden group hover:border-[#D4AF37]/30 transition-all">
             <p className="text-[10px] text-white/50 uppercase tracking-widest font-kiona mb-3">{stat.label}</p>
             <p className="text-3xl font-light text-white mb-2">{stat.val}</p>
@@ -54,7 +85,7 @@ export default function Dashboard({ drafts, published, onNewPost, onOpenPost }: 
                 className="py-3 flex justify-between items-center group cursor-pointer border-b border-transparent hover:border-white/10"
               >
                 <div className="truncate pr-4">
-                  <span className="text-sm font-sans block group-hover:text-[#D4AF37] transition-colors">{d.title || 'Untitled Draft'}</span>
+                  <span className="text-sm font-sans block group-hover:text-[#D4AF37] transition-colors">{d.title || "Untitled Draft"}</span>
                   <span className="text-[10px] text-white/40 font-kiona tracking-wider">{formatDate(d.updated_at)}</span>
                 </div>
                 <ArrowUpRight size={14} className="opacity-0 group-hover:opacity-50 text-[#D4AF37] shrink-0" />

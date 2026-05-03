@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { X, Plus, Trash, Info, Activity, ArrowUpRight, UploadCloud, Check } from "lucide-react";
+import { X, Plus, Trash, Info, Activity, ArrowUpRight, UploadCloud, Check, ChevronDown } from "lucide-react";
 import RichTextEditor from "../RichTextEditor";
 import { supabase } from "../../lib/supabase";
 import { formatDate } from "../../lib/utils";
@@ -29,6 +29,9 @@ const Tooltip = ({ text }: { text: string }) => (
 
 const tInput = "bg-white/[0.03] border border-white/10 text-white focus:border-[#D4AF37]/50 font-sans normal-case outline-none";
 
+const PRESET_CATS = ["SBA Loans", "Business Acquisition Strategy", "Financial Guidance"];
+const CUSTOM_CATS_KEY = "cms_custom_categories";
+
 export default function PostEditor({
   draft, setDraft,
   publishAction, setPublishAction,
@@ -37,6 +40,53 @@ export default function PostEditor({
   const [activeTab, setActiveTab] = useState<Tab>("main");
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // ── Category dropdown ─────────────────────────────────────────────────────────
+  const [catOpen, setCatOpen] = useState(false);
+  const [createMode, setCreateMode] = useState(false);
+  const [newCatInput, setNewCatInput] = useState("");
+  const [dbCategories, setDbCategories] = useState<string[]>([]);
+  const [customCats, setCustomCats] = useState<string[]>(() =>
+    JSON.parse(localStorage.getItem(CUSTOM_CATS_KEY) ?? "[]")
+  );
+  const catRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!catOpen) return;
+    const close = (e: MouseEvent) => {
+      if (catRef.current && !catRef.current.contains(e.target as Node)) {
+        setCatOpen(false);
+        setCreateMode(false);
+      }
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [catOpen]);
+
+  useEffect(() => {
+    supabase.from("posts").select("category").then(({ data }) => {
+      if (data) {
+        const cats = [...new Set(data.map((p: any) => p.category).filter(Boolean))] as string[];
+        setDbCategories(cats);
+      }
+    });
+  }, []);
+
+  const allCats = [...new Set([...PRESET_CATS, ...dbCategories, ...customCats])];
+
+  const handleAddCategory = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (![...PRESET_CATS, ...dbCategories].includes(trimmed)) {
+      const updated = [...customCats, trimmed];
+      setCustomCats(updated);
+      localStorage.setItem(CUSTOM_CATS_KEY, JSON.stringify(updated));
+    }
+    setDraft({ ...draft, category: trimmed });
+    setCreateMode(false);
+    setNewCatInput("");
+    setCatOpen(false);
+  };
 
   // ── Image upload ─────────────────────────────────────────────────────────────
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
@@ -172,20 +222,82 @@ export default function PostEditor({
                   <div className="grid grid-cols-2 gap-6 mb-6">
                     <div>
                       <label className="block text-[10px] uppercase font-kiona text-white/40 tracking-wider mb-2">Category</label>
-                      <input
-                        list="categories-list"
-                        type="text"
-                        placeholder="e.g. Guides"
-                        value={draft.category}
-                        onChange={e => setDraft({ ...draft, category: e.target.value })}
-                        className={`w-full p-3 transition-colors ${tInput}`}
-                      />
-                      <datalist id="categories-list">
-                        <option value="SBA Loans" />
-                        <option value="Business Acquisition" />
-                        <option value="Strategic Financial Guidance" />
-                        <option value="Resources" />
-                      </datalist>
+                      <div ref={catRef} className="relative">
+                        {/* Trigger button */}
+                        <button
+                          type="button"
+                          onClick={() => { setCatOpen(v => !v); setCreateMode(false); }}
+                          className={`w-full flex items-center justify-between p-3 text-sm text-left transition-colors ${tInput}`}
+                        >
+                          <span className={draft.category ? "text-white" : "text-white/30"}>
+                            {draft.category || "Select category..."}
+                          </span>
+                          <ChevronDown
+                            size={14}
+                            className={`text-white/40 transition-transform duration-150 shrink-0 ${catOpen ? "rotate-180" : ""}`}
+                          />
+                        </button>
+
+                        {/* Dropdown panel */}
+                        {catOpen && (
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-[#0d0d0d] border border-white/10 shadow-2xl z-50">
+                            {allCats.map(cat => (
+                              <button
+                                key={cat}
+                                type="button"
+                                onClick={() => { setDraft({ ...draft, category: cat }); setCatOpen(false); }}
+                                className={`w-full text-left px-4 py-2.5 text-xs font-sans flex items-center justify-between transition-colors ${
+                                  draft.category === cat
+                                    ? "text-[#D4AF37] bg-[#D4AF37]/5"
+                                    : "text-white/60 hover:text-white hover:bg-white/[0.04]"
+                                }`}
+                              >
+                                {cat}
+                                {draft.category === cat && <Check size={11} />}
+                              </button>
+                            ))}
+
+                            <div className="h-px bg-white/10 my-1" />
+
+                            {!createMode ? (
+                              <button
+                                type="button"
+                                onClick={() => setCreateMode(true)}
+                                className="w-full text-left px-4 py-2.5 text-[10px] font-kiona uppercase tracking-widest text-[#D4AF37]/60 hover:text-[#D4AF37] hover:bg-white/[0.03] flex items-center gap-2 transition-colors"
+                              >
+                                <Plus size={11} /> Create New Category
+                              </button>
+                            ) : (
+                              <div className="p-3 border-t border-white/5">
+                                <div className="flex gap-2">
+                                  <input
+                                    autoFocus
+                                    type="text"
+                                    value={newCatInput}
+                                    onChange={e => setNewCatInput(e.target.value)}
+                                    onKeyDown={e => {
+                                      if (e.key === "Enter") handleAddCategory(newCatInput);
+                                      if (e.key === "Escape") setCreateMode(false);
+                                    }}
+                                    placeholder="New category name..."
+                                    className="flex-1 bg-white/[0.05] border border-white/20 text-white text-xs px-3 py-2 outline-none focus:border-[#D4AF37]/50 font-sans"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAddCategory(newCatInput)}
+                                    className="bg-[#D4AF37] text-black px-3 py-2 text-[10px] font-bold font-kiona tracking-widest uppercase hover:bg-white transition-colors shrink-0"
+                                  >
+                                    Add
+                                  </button>
+                                </div>
+                                <p className="text-[10px] text-white/25 mt-2 font-sans">
+                                  Press Enter or click Add — saved for future posts.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-[10px] uppercase font-kiona text-white/40 tracking-wider mb-2">

@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
-import { Plus, Copy, Trash, Eye, Pencil, Globe, GlobeLock } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Plus, Copy, Trash, Eye, Pencil, Globe, GlobeLock, BarChart2 } from "lucide-react";
 import { getStatus, formatDate } from "../../lib/utils";
+import { supabase } from "../../lib/supabase";
 
 interface PostListProps {
   displayPosts: any[];
@@ -10,18 +11,26 @@ interface PostListProps {
   onDuplicate: (post: any, e: React.MouseEvent) => void;
   onDelete: (id: string, e: React.MouseEvent) => void;
   onTogglePublish: (post: any) => void;
+  onViewStats?: (post: any) => void;
 }
 
 type SortKey = "newest" | "oldest" | "last_edited" | "published" | "scheduled_asc";
 
+interface PostStatsBadge {
+  views: number;
+  reads: number;
+  subs: number;
+}
+
 export default function PostList({
   displayPosts, title,
-  onNewPost, onEditPost, onDuplicate, onDelete, onTogglePublish,
+  onNewPost, onEditPost, onDuplicate, onDelete, onTogglePublish, onViewStats,
 }: PostListProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "draft" | "scheduled" | "published">("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("newest");
+  const [statsMap, setStatsMap] = useState<Map<string, PostStatsBadge>>(new Map());
 
   const categories = useMemo(() => {
     const cats = [...new Set(displayPosts.map(p => p.category).filter(Boolean))];
@@ -43,13 +52,56 @@ export default function PostList({
     });
   }, [displayPosts, search, statusFilter, categoryFilter, sortKey]);
 
+  // Fetch aggregate stats for all published posts in one query
+  useEffect(() => {
+    const publishedIds = displayPosts.filter(p => getStatus(p) === "published").map(p => p.id);
+    if (publishedIds.length === 0) return;
+    loadStats(publishedIds, displayPosts);
+  }, [displayPosts]);
+
+  async function loadStats(publishedIds: string[], allPosts: any[]) {
+    const [eventsRes, subsRes] = await Promise.all([
+      supabase
+        .from("analytics_events")
+        .select("event_type, post_id")
+        .in("post_id", publishedIds),
+      supabase
+        .from("newsletter_subscribers")
+        .select("post_slug")
+        .not("post_slug", "is", null),
+    ]);
+
+    const events = eventsRes.data ?? [];
+    const subs = subsRes.data ?? [];
+
+    const map = new Map<string, PostStatsBadge>();
+    publishedIds.forEach(id => map.set(id, { views: 0, reads: 0, subs: 0 }));
+
+    events.forEach(e => {
+      const s = map.get(e.post_id);
+      if (!s) return;
+      if (e.event_type === "post_view") s.views++;
+      if (e.event_type === "post_read") s.reads++;
+    });
+
+    // Map subs by slug → post id
+    const slugToId = new Map<string, string>();
+    allPosts.forEach(p => slugToId.set(p.slug, p.id));
+    subs.forEach(s => {
+      const id = s.post_slug ? slugToId.get(s.post_slug) : undefined;
+      if (id) { const stat = map.get(id); if (stat) stat.subs++; }
+    });
+
+    setStatsMap(map);
+  }
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 max-w-6xl mx-auto py-12 px-8">
       {/* Header */}
       <div className="flex justify-between items-end mb-8 border-b border-white/10 pb-6">
         <div>
           <h1 className="text-3xl font-light tracking-tight">{title}</h1>
-          <p className="text-sm text-white/50 mt-2 font-sans">{filtered.length} post{filtered.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-white/50 mt-2 font-sans">{filtered.length} post{filtered.length !== 1 ? "s" : ""}</p>
         </div>
         <button
           onClick={onNewPost}
@@ -120,6 +172,7 @@ export default function PostList({
                 <th className="p-4 font-normal">Title</th>
                 <th className="p-4 font-normal hidden md:table-cell">Category</th>
                 <th className="p-4 font-normal">Status</th>
+                <th className="p-4 font-normal hidden lg:table-cell">Stats</th>
                 <th className="p-4 font-normal hidden lg:table-cell">Published</th>
                 <th className="p-4 font-normal hidden lg:table-cell text-right">Edited</th>
                 <th className="p-4 font-normal text-right">Actions</th>
@@ -128,6 +181,7 @@ export default function PostList({
             <tbody>
               {filtered.map(p => {
                 const status = getStatus(p);
+                const stats = statsMap.get(p.id);
                 return (
                   <tr
                     key={p.id}
@@ -139,18 +193,39 @@ export default function PostList({
                     </td>
                     <td className="p-4 hidden md:table-cell text-white/60 text-xs">{p.category || "—"}</td>
                     <td className="p-4">
-                      {status === 'draft' && (
+                      {status === "draft" && (
                         <span className="text-[10px] border border-white/10 px-2 py-1 font-kiona uppercase tracking-wider text-white/50">Draft</span>
                       )}
-                      {status === 'scheduled' && (
+                      {status === "scheduled" && (
                         <span className="text-[10px] border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-2 py-1 font-kiona uppercase tracking-wider text-[#D4AF37]">Scheduled</span>
                       )}
-                      {status === 'published' && (
+                      {status === "published" && (
                         <span className="text-[10px] border border-white/40 bg-white/5 px-2 py-1 font-kiona uppercase tracking-wider text-white">Published</span>
                       )}
                     </td>
+                    <td className="p-4 hidden lg:table-cell">
+                      {stats ? (
+                        <div className="flex items-center gap-3 text-[10px] font-kiona">
+                          <span className="flex items-center gap-1 text-white/50" title="Views">
+                            <Eye size={10} className="text-[#D4AF37]" /> {stats.views}
+                          </span>
+                          <span className="flex items-center gap-1 text-white/50" title="Reads">
+                            <span className="text-[#D4AF37]">📖</span> {stats.reads}
+                          </span>
+                          {stats.subs > 0 && (
+                            <span className="flex items-center gap-1 text-white/50" title="Subscribers">
+                              <span className="text-[#D4AF37]">✉</span> {stats.subs}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        status === "published" ? (
+                          <span className="text-white/20 text-[10px] font-kiona">No data yet</span>
+                        ) : null
+                      )}
+                    </td>
                     <td className="p-4 hidden lg:table-cell text-white/50 text-xs">
-                      {p.published_at ? formatDate(p.published_at) : '—'}
+                      {p.published_at ? formatDate(p.published_at) : "—"}
                     </td>
                     <td className="p-4 hidden lg:table-cell text-right text-white/50 text-xs">
                       {formatDate(p.updated_at)}
@@ -166,19 +241,28 @@ export default function PostList({
                         </button>
                         {p.slug && (
                           <button
-                            onClick={e => { e.stopPropagation(); window.open(`/resources/${p.slug}?preview=true`, '_blank'); }}
+                            onClick={e => { e.stopPropagation(); window.open(`/resources/${p.slug}?preview=true`, "_blank"); }}
                             className="text-white/40 hover:text-[#D4AF37] p-1"
                             title="Preview"
                           >
                             <Eye size={14} />
                           </button>
                         )}
+                        {status === "published" && onViewStats && (
+                          <button
+                            onClick={e => { e.stopPropagation(); onViewStats(p); }}
+                            className="text-white/40 hover:text-[#D4AF37] p-1"
+                            title="View Stats"
+                          >
+                            <BarChart2 size={14} />
+                          </button>
+                        )}
                         <button
                           onClick={e => { e.stopPropagation(); onTogglePublish(p); }}
-                          className={`p-1 ${status === 'published' ? 'text-white/40 hover:text-red-400' : 'text-white/40 hover:text-green-400'}`}
-                          title={status === 'published' ? 'Unpublish' : 'Publish'}
+                          className={`p-1 ${status === "published" ? "text-white/40 hover:text-red-400" : "text-white/40 hover:text-green-400"}`}
+                          title={status === "published" ? "Unpublish" : "Publish"}
                         >
-                          {status === 'published' ? <GlobeLock size={14} /> : <Globe size={14} />}
+                          {status === "published" ? <GlobeLock size={14} /> : <Globe size={14} />}
                         </button>
                         <button
                           onClick={e => onDuplicate(p, e)}

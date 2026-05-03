@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, ChangeEvent } from "react";
+import { supabase } from "../lib/supabase";
 import {
   Phone,
   Mail,
@@ -67,7 +68,7 @@ function HeroSection() {
         >
           <a
             href="#contact-form"
-            className="group inline-flex items-center gap-3 bg-[#D4AF37] text-black px-8 py-4 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90"
+            className="group inline-flex items-center gap-3 bg-[#D4AF37] text-black px-10 py-4 text-[11px] font-bold font-kiona tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black"
           >
             Send Ryan a Message
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -322,7 +323,7 @@ function PhoneCTASection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
                 href="tel:+19472181845"
-                className="group inline-flex items-center gap-3 bg-[#D4AF37] text-black px-10 py-5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90 w-full sm:w-auto justify-center"
+                className="group inline-flex items-center gap-3 bg-[#D4AF37] text-black px-10 py-4 text-[11px] font-bold font-kiona tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black w-full sm:w-auto justify-center"
               >
                 <Phone className="w-4 h-4" strokeWidth={2} />
                 Call (947) 218-1845
@@ -331,7 +332,7 @@ function PhoneCTASection() {
                 href="https://cal.com/ryan-kroge-nsvqdg/30min"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-3 border border-white/[0.15] text-white/70 px-10 py-5 text-xs font-bold tracking-widest uppercase transition-all hover:border-white/30 hover:text-white w-full sm:w-auto justify-center"
+                className="group inline-flex items-center gap-3 border border-white/20 text-white px-10 py-4 text-[11px] font-bold font-kiona tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black hover:border-white w-full sm:w-auto justify-center"
               >
                 <Calendar className="w-4 h-4" strokeWidth={1.5} />
                 Book Online Instead
@@ -344,13 +345,43 @@ function PhoneCTASection() {
   );
 }
 
+// ─── Contact Form helpers ──────────────────────────────────────────────────────
+const RATE_LIMIT_KEY = "contact_submissions";
+const RATE_LIMIT_MAX = 3;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+function getStoredTimestamps(): number[] {
+  try {
+    return JSON.parse(localStorage.getItem(RATE_LIMIT_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
+function checkRateLimit(): { blocked: boolean; waitMinutes: number } {
+  const now = Date.now();
+  const recent = getStoredTimestamps().filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT_MAX) {
+    const oldest = Math.min(...recent);
+    const waitMs = RATE_LIMIT_WINDOW_MS - (now - oldest);
+    return { blocked: true, waitMinutes: Math.ceil(waitMs / 60_000) };
+  }
+  return { blocked: false, waitMinutes: 0 };
+}
+
+function recordSubmission() {
+  const now = Date.now();
+  const recent = getStoredTimestamps().filter(t => now - t < RATE_LIMIT_WINDOW_MS);
+  localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify([...recent, now]));
+}
+
 // ─── Contact Form ──────────────────────────────────────────────────────────────
 const INPUT_BASE =
   "w-full bg-black/60 border border-white/[0.12] text-white placeholder-white/20 px-5 py-4 text-base focus:outline-none focus:border-[#D4AF37]/50 transition-colors rounded-none";
 const LABEL_BASE =
   "block font-kiona text-[8px] text-white/50 tracking-[0.2em] uppercase mb-2";
 
-type FormState = "idle" | "submitting" | "success";
+type FormState = "idle" | "submitting" | "success" | "error";
 
 function ContactFormSection() {
   const [formState, setFormState] = useState<FormState>("idle");
@@ -361,6 +392,7 @@ function ContactFormSection() {
     phone: "",
     type: "",
     message: "",
+    newsletter: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -368,27 +400,75 @@ function ContactFormSection() {
     const e: Record<string, string> = {};
     if (!data.firstName.trim()) e.firstName = "Please enter your first name.";
     if (!data.lastName.trim()) e.lastName = "Please enter your last name.";
-    if (!data.email.trim() || !/\S+@\S+\.\S+/.test(data.email))
+    if (!data.email.trim() || !/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(data.email))
       e.email = "Please enter a valid email address.";
     if (!data.type) e.type = "Please select an option.";
     if (!data.message.trim()) e.message = "Please tell Ryan what's on your mind.";
     return e;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
+
+    const { blocked, waitMinutes } = checkRateLimit();
+    if (blocked) {
+      setErrors({ _rateLimit: `You've submitted too many times. Please wait ${waitMinutes} minute${waitMinutes !== 1 ? "s" : ""} before trying again.` });
+      return;
+    }
+
     setErrors({});
     setFormState("submitting");
-    setTimeout(() => setFormState("success"), 1200);
+
+    try {
+      // 1. Save lead to Supabase (CRM)
+      const { data: lead, error: dbError } = await supabase
+        .from("leads")
+        .insert({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          phone: data.phone || null,
+          inquiry_type: data.type,
+          message: data.message,
+          subscribe_newsletter: data.newsletter,
+          source: "contact_form",
+        })
+        .select("id")
+        .single();
+
+      if (dbError) throw dbError;
+
+      // 2. Trigger confirmation email + Ryan notification via Edge Function
+      // This is non-blocking — form succeeds even if email fails
+      supabase.functions.invoke("on-lead-created", {
+        body: {
+          id: lead.id,
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          inquiry_type: data.type,
+          message: data.message,
+          subscribe_newsletter: data.newsletter,
+        },
+      }).catch(console.error);
+
+      recordSubmission();
+      setFormState("success");
+    } catch (err) {
+      console.error("Form submission error:", err);
+      setFormState("error");
+    }
   };
 
   const set = (field: string) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setData((d) => ({ ...d, [field]: e.target.value }));
+    const value = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
+    setData((d) => ({ ...d, [field]: value }));
     setErrors((err) => { const n = { ...err }; delete n[field]; return n; });
   };
 
@@ -592,11 +672,49 @@ function ContactFormSection() {
                   )}
                 </div>
 
+                {/* ── CAPTCHA (recommended: Cloudflare Turnstile) ──────────────────
+                    To add Turnstile:
+                    1. npm install @marsidev/react-turnstile
+                    2. Get a free Site Key at dash.cloudflare.com > Turnstile
+                    3. Replace this comment block with:
+
+                    import { Turnstile } from "@marsidev/react-turnstile";
+                    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
+                    <Turnstile
+                      siteKey="YOUR_SITE_KEY"
+                      onSuccess={setCaptchaToken}
+                      className="mt-1"
+                    />
+
+                    Then pass captchaToken in the Supabase insert and verify it in
+                    the on-lead-created Edge Function via Cloudflare's verify API.
+                ─────────────────────────────────────────────────────────────────── */}
+
+                {errors._rateLimit && (
+                  <p className="text-amber-400 text-sm text-center bg-amber-400/5 border border-amber-400/20 px-4 py-3">
+                    {errors._rateLimit}
+                  </p>
+                )}
+
+                {/* Newsletter opt-in */}
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={data.newsletter}
+                    onChange={set("newsletter")}
+                    className="accent-[#D4AF37] w-4 h-4 mt-0.5 shrink-0 cursor-pointer"
+                  />
+                  <span className="text-white/50 text-sm leading-relaxed group-hover:text-white/70 transition-colors">
+                    Subscribe to Ryan's newsletter — insights on SBA loans, business acquisition, and strategy. No spam, unsubscribe anytime.
+                  </span>
+                </label>
+
                 <div className="flex flex-col gap-4 pt-2">
                   <button
                     type="submit"
                     disabled={formState === "submitting"}
-                    className="group w-full inline-flex items-center justify-center gap-3 bg-[#D4AF37] text-black px-8 py-5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90 disabled:opacity-60"
+                    className="group w-full inline-flex items-center justify-center gap-3 bg-[#D4AF37] text-black px-10 py-4 text-[11px] font-bold font-kiona tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black disabled:opacity-60 disabled:pointer-events-none"
                   >
                     {formState === "submitting" ? (
                       "Sending..."
@@ -607,6 +725,13 @@ function ContactFormSection() {
                       </>
                     )}
                   </button>
+
+                  {formState === "error" && (
+                    <p className="text-red-400 text-sm text-center">
+                      Something went wrong. Please try again or call{" "}
+                      <a href="tel:+19472181845" className="underline">(947) 218-1845</a>.
+                    </p>
+                  )}
 
                   <div className="flex items-start gap-3">
                     <Lock className="w-3.5 h-3.5 text-white/25 flex-shrink-0 mt-0.5" strokeWidth={1.5} />
@@ -853,7 +978,7 @@ function FinalCTASection() {
         >
           <a
             href="#contact-form"
-            className="group inline-flex items-center gap-3 bg-[#D4AF37] text-black px-10 py-5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90"
+            className="group inline-flex items-center gap-3 bg-[#D4AF37] text-black px-10 py-4 text-[11px] font-bold font-kiona tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black"
           >
             Send Ryan a Message
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

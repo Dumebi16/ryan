@@ -8,6 +8,7 @@ import PostList from "../components/admin/PostList";
 import PostEditor from "../components/admin/PostEditor";
 import Analytics from "../components/admin/Analytics";
 import ProfilePage from "../components/admin/ProfilePage";
+import PostStatsPanel from "../components/admin/PostStatsPanel";
 
 const emptyDraft = {
   title: "", slug: "", category: "", read_time: 5, cover_image_url: "", hero_alt_text: "",
@@ -33,6 +34,7 @@ export default function Admin() {
   const [posts, setPosts] = useState<any[]>([]);
   const [draft, setDraft] = useState<any>(emptyDraft);
   const [publishAction, setPublishAction] = useState<"draft" | "schedule" | "publish">("draft");
+  const [statsPost, setStatsPost] = useState<any>(null);
 
   const drafts = posts.filter(p => getStatus(p) === "draft");
   const scheduled = posts.filter(p => getStatus(p) === "scheduled");
@@ -231,22 +233,22 @@ export default function Admin() {
         )}
         {activeSection === "posts_all" && (
           <PostList displayPosts={posts} title="All Posts" onNewPost={newPost} onEditPost={openPost}
-            onDuplicate={duplicatePost} onDelete={deletePost} onTogglePublish={togglePublish} />
+            onDuplicate={duplicatePost} onDelete={deletePost} onTogglePublish={togglePublish} onViewStats={setStatsPost} />
         )}
         {activeSection === "posts_drafts" && (
           <PostList displayPosts={drafts} title="Draft Files" onNewPost={newPost} onEditPost={openPost}
-            onDuplicate={duplicatePost} onDelete={deletePost} onTogglePublish={togglePublish} />
+            onDuplicate={duplicatePost} onDelete={deletePost} onTogglePublish={togglePublish} onViewStats={setStatsPost} />
         )}
         {activeSection === "posts_scheduled" && (
           <PostList displayPosts={scheduled} title="Scheduled Content" onNewPost={newPost} onEditPost={openPost}
-            onDuplicate={duplicatePost} onDelete={deletePost} onTogglePublish={togglePublish} />
+            onDuplicate={duplicatePost} onDelete={deletePost} onTogglePublish={togglePublish} onViewStats={setStatsPost} />
         )}
         {activeSection === "posts_published" && (
           <PostList displayPosts={published} title="Live Articles" onNewPost={newPost} onEditPost={openPost}
-            onDuplicate={duplicatePost} onDelete={deletePost} onTogglePublish={togglePublish} />
+            onDuplicate={duplicatePost} onDelete={deletePost} onTogglePublish={togglePublish} onViewStats={setStatsPost} />
         )}
         {activeSection === "analytics" && (
-          <Analytics publishedCount={published.length} />
+          <Analytics publishedCount={published.length} posts={posts} />
         )}
         {activeSection === "profile" && (
           <ProfilePage session={session} showToast={showToast} onSessionRefresh={refreshSession} />
@@ -268,6 +270,11 @@ export default function Admin() {
           </div>
         )}
       </main>
+
+      {/* Per-post stats panel */}
+      {statsPost && (
+        <PostStatsPanel post={statsPost} onClose={() => setStatsPost(null)} />
+      )}
     </div>
   );
 }
