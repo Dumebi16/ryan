@@ -17,9 +17,7 @@ export default function Resources() {
       const admin = !!session;
       setIsAdmin(admin);
 
-      let query = supabase.from("posts").select("*");
-      if (!admin) query = query.eq("is_published", true);
-      query = query.order("published_at", { ascending: false });
+      let query = supabase.from("posts").select("*").eq("is_published", true).order("published_at", { ascending: false });
 
       const { data, error } = await query;
       if (error) console.error("Error fetching posts:", error);

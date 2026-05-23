@@ -96,9 +96,11 @@ export default function ResourcePost() {
     async function fetchPost() {
       if (!slug) return;
 
+      let session = null;
       // Preview mode: only authenticated admins can view drafts
       if (isPreview) {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data } = await supabase.auth.getSession();
+        session = data.session;
         if (!session) {
           setPost(null);
           setLoading(false);
@@ -106,11 +108,14 @@ export default function ResourcePost() {
         }
       }
 
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("slug", slug)
-        .single();
+      let query = supabase.from("posts").select("*").eq("slug", slug);
+      
+      // If not in authenticated preview mode, only allow published posts
+      if (!isPreview || !session) {
+        query = query.eq("is_published", true);
+      }
+
+      const { data, error } = await query.single();
         
       if (error) {
         console.error("Error fetching post:", error);
