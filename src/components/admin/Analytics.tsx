@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, ExternalLink, TrendingUp, Eye, BookOpen, Clock, Mail, Users, ChevronDown, ChevronUp } from "lucide-react";
+import { TrendingUp, Eye, BookOpen, Clock, Mail, Users } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
@@ -77,118 +77,6 @@ function ChartTooltip({ active, payload, label }: any) {
       ))}
     </div>
   );
-}
-
-// ─── GA4 Settings (collapsible) ───────────────────────────────────────────────
-
-const GA4_KEY = "cms_ga4_measurement_id";
-
-function GA4Settings() {
-  const [open, setOpen] = useState(false);
-  const [ga4Id, setGa4Id] = useState(() => localStorage.getItem(GA4_KEY) ?? "");
-  const [inputId, setInputId] = useState(ga4Id);
-  const [saved, setSaved] = useState(false);
-  const isConnected = !!ga4Id;
-
-  const handleSave = () => {
-    const trimmed = inputId.trim();
-    localStorage.setItem(GA4_KEY, trimmed);
-    setGa4Id(trimmed);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
-    if (trimmed) injectGA4(trimmed);
-  };
-
-  const handleDisconnect = () => {
-    localStorage.removeItem(GA4_KEY);
-    setGa4Id("");
-    setInputId("");
-  };
-
-  useEffect(() => { if (ga4Id) injectGA4(ga4Id); }, []);
-
-  return (
-    <div className="border border-white/10 bg-white/[0.02]">
-      <button
-        onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between px-6 py-4 text-left"
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-kiona uppercase tracking-widest text-[#D4AF37]">Integrations</span>
-          <span className="text-sm text-white/60">Google Analytics 4</span>
-          <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? "bg-green-400" : "bg-white/20"}`} />
-          <span className={`text-[10px] font-kiona uppercase tracking-widest ${isConnected ? "text-green-400" : "text-white/30"}`}>
-            {isConnected ? "Connected" : "Not connected"}
-          </span>
-        </div>
-        {open ? <ChevronUp size={14} className="text-white/40" /> : <ChevronDown size={14} className="text-white/40" />}
-      </button>
-
-      {open && (
-        <div className="px-6 pb-6 border-t border-white/10 pt-4">
-          <p className="text-xs text-white/40 font-sans mb-4">
-            Enter your GA4 Measurement ID to enable Google Analytics tracking. Add the GA4 script to{" "}
-            <code className="text-white/60">index.html</code> for reliable tracking of all visitors.
-          </p>
-          <div className="flex items-end gap-3 max-w-lg">
-            <div className="flex-1">
-              <label className="block text-[10px] uppercase font-kiona text-white/40 tracking-wider mb-2">
-                Measurement ID
-              </label>
-              <input
-                type="text"
-                placeholder="G-XXXXXXXXXX"
-                value={inputId}
-                onChange={e => setInputId(e.target.value)}
-                className="w-full bg-white/[0.03] border border-white/10 text-white focus:border-[#D4AF37]/50 font-sans outline-none px-4 py-3 text-sm"
-              />
-              <p className="text-[10px] text-white/30 mt-1 font-sans">
-                GA4 → Admin → Data Streams → your stream → Measurement ID
-              </p>
-            </div>
-            <div className="flex gap-2 pb-6">
-              <button
-                onClick={handleSave}
-                className="bg-[#D4AF37] text-black px-5 py-3 text-[10px] font-bold font-kiona tracking-widest uppercase hover:bg-white transition-all"
-              >
-                {saved ? <span className="flex items-center gap-1"><Check size={12} /> Saved</span> : "Save"}
-              </button>
-              {isConnected && (
-                <button
-                  onClick={handleDisconnect}
-                  className="border border-white/10 text-white/40 px-4 py-3 text-[10px] font-kiona uppercase tracking-widest hover:border-red-400/30 hover:text-red-400 transition-colors"
-                >
-                  Disconnect
-                </button>
-              )}
-              {isConnected && (
-                <a
-                  href="https://analytics.google.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 border border-white/10 text-white/40 px-4 py-3 text-[10px] font-kiona uppercase tracking-widest hover:text-[#D4AF37] hover:border-[#D4AF37]/30 transition-colors"
-                >
-                  Open GA4 <ExternalLink size={10} />
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function injectGA4(measurementId: string) {
-  if (!measurementId || document.getElementById("ga4-script")) return;
-  const s1 = document.createElement("script");
-  s1.id = "ga4-script"; s1.async = true;
-  s1.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-  document.head.appendChild(s1);
-  const s2 = document.createElement("script");
-  s2.id = "ga4-init";
-  s2.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${measurementId}');`;
-  document.head.appendChild(s2);
 }
 
 // ─── Main Analytics Component ─────────────────────────────────────────────────
@@ -486,7 +374,7 @@ export default function Analytics({ publishedCount, posts }: AnalyticsProps) {
         )}
       </div>
 
-      {/* Bottom row: Category breakdown + GA4 settings */}
+      {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
         {/* Category breakdown */}
@@ -555,8 +443,6 @@ export default function Analytics({ publishedCount, posts }: AnalyticsProps) {
         </div>
       </div>
 
-      {/* GA4 collapsible */}
-      <GA4Settings />
     </div>
   );
 }

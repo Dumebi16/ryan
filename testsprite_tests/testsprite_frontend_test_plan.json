@@ -1,0 +1,809 @@
+[
+  {
+    "id": "TC001",
+    "title": "Submit contact form successfully",
+    "description": "A visitor can complete the contact form with valid details and see a success confirmation after submission.",
+    "category": "Homepage-to-contact conversion flow",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the name field with a valid full name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with a valid email address"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the message field with a genuine inquiry"
+      },
+      {
+        "type": "action",
+        "description": "Submit the contact form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Access the admin dashboard after sign-in",
+    "description": "An authenticated admin can sign in and reach the protected admin dashboard to manage resource posts.",
+    "category": "Authenticated Resource Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the admin dashboard link"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the resource post list is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Submit a complete contact inquiry successfully",
+    "description": "A visitor can fill out the lead form on the contact page and receive a success confirmation after submitting it.",
+    "category": "Contact Form Lead Capture",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the first name field with a valid name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the last name field with a valid name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with a valid email address"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the loan purpose field with a valid inquiry"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the message field with a valid message"
+      },
+      {
+        "type": "action",
+        "description": "Check the consent checkbox"
+      },
+      {
+        "type": "action",
+        "description": "Submit the form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Reach contact page from the homepage",
+    "description": "A visitor can start on the homepage and navigate to the contact page to begin a conversion action.",
+    "category": "Homepage-to-contact conversion flow",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to contact the business"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the contact page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the contact form is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Request an AI callback with valid contact details",
+    "description": "A visitor can request an AI callback from the contact page and see the callback submission state after entering valid details.",
+    "category": "Contact Form Lead Capture",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the name field with a valid name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the callback request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a callback submission confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Show validation when required contact fields are missing",
+    "description": "A visitor who submits the contact form without required information sees validation messages and no successful submission state.",
+    "category": "Contact Form Lead Capture",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Submit the form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation messages are visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is not visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Submit AI callback request successfully",
+    "description": "A visitor can request an AI-powered callback from the contact page and see the request submission state.",
+    "category": "AI Callback Request",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the name field with a valid full name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Start the AI callback request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a callback request submission state is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Navigate from the homepage to the contact page",
+    "description": "A visitor can start from the homepage and reach the contact page through the primary call to action.",
+    "category": "Homepage Engagement Experience",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the primary call to action for starting an application"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the contact page is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Review SBA loan guidance",
+    "description": "A visitor can open the SBA Loans page from the homepage and review loan options and eligibility guidance.",
+    "category": "Public Website Navigation and Service Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view SBA loan services"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the SBA Loans page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify loan guidance content is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "View the embedded booking calendar",
+    "description": "A visitor can open the contact page and see the embedded calendar booking experience available for scheduling.",
+    "category": "Calendar Booking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the embedded booking calendar is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Review homepage service content",
+    "description": "A visitor can explore the homepage services section and confirm the available service options are presented.",
+    "category": "Homepage Engagement Experience",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the services section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the service options are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Browse the main service pages",
+    "description": "A visitor can move through the key service and about pages to learn about offerings and guidance.",
+    "category": "Public Service Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to learn more about the business"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the about page is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the SBA loans page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the SBA loans page is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the business acquisition page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the business acquisition page is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the strategic financial guidance page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the strategic financial guidance page is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Review business acquisition financing guidance",
+    "description": "A visitor can open the Business Acquisition page from the homepage and review acquisition financing guidance.",
+    "category": "Public Website Navigation and Service Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view business acquisition services"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the Business Acquisition page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify acquisition financing content is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "Create a new resource post",
+    "description": "An authenticated admin can create a new resource post with rich text content and see it appear in the list.",
+    "category": "Authenticated Resource Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the admin dashboard link"
+      },
+      {
+        "type": "action",
+        "description": "Start creating a new resource post"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the title field with a valid post title"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the content editor with rich text content"
+      },
+      {
+        "type": "action",
+        "description": "Save the resource post"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new resource post appears in the list"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "Review strategic financial guidance services",
+    "description": "A visitor can open the Strategic Financial Guidance page from the homepage and review advisory service content.",
+    "category": "Public Website Navigation and Service Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view strategic financial guidance"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the Strategic Financial Guidance page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify advisory service content is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC016",
+    "title": "Browse a resource article and return to the list",
+    "description": "A visitor can open a published resource article from the resources list, read it, and return to continue browsing the list.",
+    "category": "Public Website Navigation and Service Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /resources"
+      },
+      {
+        "type": "action",
+        "description": "Open a published resource article"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the resource article is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Return to the resources list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the resources list is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC017",
+    "title": "Discover trust content on the homepage",
+    "description": "A visitor can review the homepage and find the trust-building sections that support engagement.",
+    "category": "Public Service Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify service information is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify testimonial content is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify FAQ content is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC018",
+    "title": "Explore the About page from the homepage",
+    "description": "A visitor can move from the homepage to the About page and review Ryan’s background and approach.",
+    "category": "Public Website Navigation and Service Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view the About page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the About page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify background and approach content is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC019",
+    "title": "Browse resources and open an article",
+    "description": "A returning reader can open a published resource article from the resources list and read its details.",
+    "category": "Resources Listing and Reading",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /resources"
+      },
+      {
+        "type": "action",
+        "description": "Click a published resource article"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the resource article page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify article content is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC020",
+    "title": "Expand homepage FAQs to read answers",
+    "description": "A visitor can open FAQ items on the homepage and read the answers to common financing questions.",
+    "category": "Homepage Engagement Experience",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the FAQ section"
+      },
+      {
+        "type": "action",
+        "description": "Open an FAQ item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an FAQ answer is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC021",
+    "title": "Edit an existing resource post",
+    "description": "An authenticated admin can update an existing resource post and see the updated content reflected in the list.",
+    "category": "Authenticated Resource Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the admin dashboard link"
+      },
+      {
+        "type": "action",
+        "description": "Open an existing resource post for editing"
+      },
+      {
+        "type": "action",
+        "description": "Update the post content in the rich text editor"
+      },
+      {
+        "type": "action",
+        "description": "Save the updated resource post"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated post appears in the list"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC022",
+    "title": "Open the resources page from the homepage",
+    "description": "A visitor can navigate from the homepage to the resources list and see published educational posts.",
+    "category": "Public Website Navigation and Service Discovery",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to view resources"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the resources list is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify published resource posts are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC023",
+    "title": "See different homepage testimonials",
+    "description": "A returning reader can move through the homepage testimonial area and view different testimonials as the carousel advances.",
+    "category": "Homepage Engagement Experience",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the testimonials section"
+      },
+      {
+        "type": "action",
+        "description": "Advance the testimonial carousel"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a different testimonial is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC024",
+    "title": "Return to resources from an article",
+    "description": "A returning reader can go from an article back to the resource list and continue browsing.",
+    "category": "Resources Listing and Reading",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /resources"
+      },
+      {
+        "type": "action",
+        "description": "Click a published resource article"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to return to the resources list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the resources list is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify multiple resource articles are visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC025",
+    "title": "Delete a resource post",
+    "description": "An authenticated admin can delete a resource post and see it removed from the list.",
+    "category": "Authenticated Resource Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the admin dashboard link"
+      },
+      {
+        "type": "action",
+        "description": "Delete an existing resource post"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the deleted post is no longer visible in the list"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC026",
+    "title": "Show phone validation for invalid callback request",
+    "description": "A visitor entering an invalid phone number on the contact page sees phone validation feedback and the callback request is not submitted.",
+    "category": "AI Callback Request",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the name field with a valid full name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with an invalid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Start the AI callback request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a phone validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC027",
+    "title": "Show validation for an invalid callback phone number",
+    "description": "A visitor entering an invalid phone number for the callback request sees phone validation feedback and cannot submit successfully.",
+    "category": "Contact Form Lead Capture",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /contact"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the name field with a valid name"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone field with an invalid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the callback request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a phone validation error is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a callback submission confirmation is not visible"
+      }
+    ],
+    "priority": "Low"
+  }
+]

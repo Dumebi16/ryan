@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "motion/react";
 import { useState, ChangeEvent } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { supabase } from "../lib/supabase";
 import {
   Phone,
@@ -385,6 +386,7 @@ type FormState = "idle" | "submitting" | "success" | "error";
 
 function ContactFormSection() {
   const [formState, setFormState] = useState<FormState>("idle");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [data, setData] = useState({
     firstName: "",
     lastName: "",
@@ -393,6 +395,7 @@ function ContactFormSection() {
     type: "",
     message: "",
     newsletter: false,
+    honeypot: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -404,6 +407,15 @@ function ContactFormSection() {
       e.email = "Please enter a valid email address.";
     if (!data.type) e.type = "Please select an option.";
     if (!data.message.trim()) e.message = "Please tell Ryan what's on your mind.";
+
+    if (data.phone.trim() && !/^\+?[\d\s\-\(\).]{10,}$/.test(data.phone)) {
+      e.phone = "Please enter a valid phone number.";
+    }
+
+    if (!captchaToken) {
+      e.captcha = "Please complete the CAPTCHA verification.";
+    }
+
     return e;
   };
 
@@ -425,29 +437,32 @@ function ContactFormSection() {
     setFormState("submitting");
 
     try {
-      // 1. Save lead to Supabase (CRM)
-      const { data: lead, error: dbError } = await supabase
-        .from("leads")
-        .insert({
+      // 1. Save lead securely via Edge Function (bypassing public RLS & validating spam)
+      const { data: resData, error: funcError } = await supabase.functions.invoke("submit-lead", {
+        body: {
           first_name: data.firstName,
           last_name: data.lastName,
           email: data.email,
-          phone: data.phone || null,
+          phone: data.phone,
           inquiry_type: data.type,
           message: data.message,
           subscribe_newsletter: data.newsletter,
-          source: "contact_form",
-        })
-        .select("id")
-        .single();
+          honeypot: data.honeypot,
+          captcha_token: captchaToken,
+        },
+      });
 
-      if (dbError) throw dbError;
+      if (funcError) throw funcError;
+      if (resData?.error) throw new Error(resData.error);
+
+      // If honeypot caught a bot, it silently returns a fake success ID
+      const leadId = resData?.id;
 
       // 2. Trigger confirmation email + Ryan notification via Edge Function
       // This is non-blocking — form succeeds even if email fails
       supabase.functions.invoke("on-lead-created", {
         body: {
-          id: lead.id,
+          id: leadId,
           first_name: data.firstName,
           last_name: data.lastName,
           email: data.email,
@@ -553,6 +568,16 @@ function ContactFormSection() {
                 className="flex flex-col gap-6"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  {/* Honeypot field for spam prevention */}
+                  <input
+                    type="text"
+                    name="b_name"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    style={{ display: "none" }}
+                    value={data.honeypot}
+                    onChange={set("honeypot")}
+                  />
                   <div>
                     <label htmlFor="firstName" className={LABEL_BASE}>
                       First Name <span className="text-[#D4AF37]">*</span>
@@ -623,6 +648,9 @@ function ContactFormSection() {
                     onChange={set("phone")}
                     className={INPUT_BASE}
                   />
+                  {errors.phone && (
+                    <p className="text-red-400 text-xs mt-2">{errors.phone}</p>
+                  )}
                 </div>
 
                 <div>
@@ -672,24 +700,19 @@ function ContactFormSection() {
                   )}
                 </div>
 
-                {/* ── CAPTCHA (recommended: Cloudflare Turnstile) ──────────────────
-                    To add Turnstile:
-                    1. npm install @marsidev/react-turnstile
-                    2. Get a free Site Key at dash.cloudflare.com > Turnstile
-                    3. Replace this comment block with:
-
-                    import { Turnstile } from "@marsidev/react-turnstile";
-                    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-
-                    <Turnstile
-                      siteKey="YOUR_SITE_KEY"
-                      onSuccess={setCaptchaToken}
-                      className="mt-1"
-                    />
-
-                    Then pass captchaToken in the Supabase insert and verify it in
-                    the on-lead-created Edge Function via Cloudflare's verify API.
-                ─────────────────────────────────────────────────────────────────── */}
+                <div>
+                  <ReCAPTCHA
+                    sitekey="6LeKUPksAAAAAOYbguvgsC7qYYTG_S1l4yQTN47T"
+                    onChange={(token) => {
+                      setCaptchaToken(token);
+                      setErrors((err) => { const n = { ...err }; delete n.captcha; return n; });
+                    }}
+                    theme="dark"
+                  />
+                  {errors.captcha && (
+                    <p className="text-red-400 text-xs mt-2">{errors.captcha}</p>
+                  )}
+                </div>
 
                 {errors._rateLimit && (
                   <p className="text-amber-400 text-sm text-center bg-amber-400/5 border border-amber-400/20 px-4 py-3">

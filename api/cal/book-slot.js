@@ -54,6 +54,9 @@ export default async function handler(req, res) {
     const bookingBody = {
       eventTypeId: EVENT_TYPE_ID,
       start: start_time,
+      // Cal.com v2 (2024-08-13): only `attendee` is needed.
+      // It auto-populates bookingFieldsResponses from attendee data.
+      // Do NOT include a `responses` field — it causes a 400 error.
       attendee: {
         name: name.trim(),
         email: resolvedEmail,

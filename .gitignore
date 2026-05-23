@@ -11,3 +11,5 @@ website-cloner-mcp/
 test-*.js
 test-*.png
 test_*.js
+
+testsprite_tests/tmp/config.json

@@ -1,0 +1,106 @@
+version: "2"
+type: frontend
+tech_stack:
+  - React
+  - TypeScript
+  - Vite
+  - Tailwind CSS
+  - Supabase
+  - React Router
+  - Retell AI
+  - Cal.com
+routes:
+  - path: /
+    file: src/pages/Home.tsx
+    auth_required: false
+    description: Landing page with hero, services overview, testimonials, and FAQs
+  - path: /about
+    file: src/pages/About.tsx
+    auth_required: false
+    description: Information about Ryan Kroge, experience, and philosophy
+  - path: /sba-loans
+    file: src/pages/SBALoan.tsx
+    auth_required: false
+    description: Details about SBA loan options and eligibility
+  - path: /business-acquisition
+    file: src/pages/BusinessAcquisition.tsx
+    auth_required: false
+    description: Information on using SBA loans for business acquisition
+  - path: /strategic-financial-guidance
+    file: src/pages/StrategicFinancialGuidance.tsx
+    auth_required: false
+    description: Details on strategic financial guidance services
+  - path: /contact
+    file: src/pages/Contact.tsx
+    auth_required: false
+    description: Contact form, AI call integration, and booking calendar
+  - path: /resources
+    file: src/pages/Resources.tsx
+    auth_required: false
+    description: List of published resource posts
+  - path: /resources/:slug
+    file: src/pages/ResourcePost.tsx
+    auth_required: false
+    description: Individual resource post view
+  - path: /admin
+    file: src/pages/Admin.tsx
+    auth_required: true
+    description: Admin panel to manage resource posts
+features:
+  - name: Contact Form
+    description: Form to capture leads, stored in Supabase
+    files:
+      - src/pages/Contact.tsx
+    entry_route: /contact
+    user_interactions:
+      - Fill First Name, Last Name, Email, Phone
+      - Select Loan Purpose
+      - Enter Message
+      - Check consent box
+      - Click Submit
+      - See success or error message
+    api_calls:
+      - method: POST
+        endpoint: Supabase database insert
+    auth_required: false
+  - name: AI Call Initiation
+    description: Trigger an outbound call via Retell AI
+    files:
+      - src/pages/Contact.tsx
+    entry_route: /contact
+    user_interactions:
+      - Enter Name
+      - Enter Phone Number
+      - Click Start AI Call
+    api_calls:
+      - method: POST
+        endpoint: /api/retell/create-call
+    auth_required: false
+  - name: Resource Management
+    description: Admin CRUD for resource posts
+    files:
+      - src/pages/Admin.tsx
+      - src/components/RichTextEditor.tsx
+    entry_route: /admin
+    user_interactions:
+      - Login with Supabase auth
+      - View list of posts
+      - Create new post with title and rich text content
+      - Edit existing post
+      - Delete post
+    api_calls:
+      - method: POST
+        endpoint: Supabase auth/login
+      - method: GET
+        endpoint: Supabase resources fetch
+      - method: POST
+        endpoint: Supabase resources insert
+      - method: PUT
+        endpoint: Supabase resources update
+      - method: DELETE
+        endpoint: Supabase resources delete
+    auth_required: true
+known_limitations:
+  - issue: Contact form rate limiting
+    location: src/pages/Contact.tsx
+    impact: Prevents rapid re-submission, testing may hit rate limits
