@@ -31,7 +31,7 @@ export const Footer = () => {
           <nav className="flex flex-col gap-4">
             {["Home", "About", "SBA Loans", "Business Acquisition", "Blog", "Contact"].map(
               (link) => {
-                const path = link === 'Home' ? '/' : link === 'About' ? '/about' : '#';
+                const path = link === 'Home' ? '/' : link === 'About' ? '/about' : link === 'SBA Loans' ? '/sba-loans' : link === 'Business Acquisition' ? '/business-acquisition' : link === 'Blog' ? '/resources' : link === 'Contact' ? '/contact' : '#';
                 return path === '#' ? (
                   <a
                     key={link}
@@ -67,15 +67,26 @@ export const Footer = () => {
               "Equipment Financing",
               "Working Capital",
               "Strategic Guidance",
-            ].map((item) => (
-              <a
-                key={item}
-                href="#"
-                className="text-[13px] text-white/45 hover:text-white/85 transition-colors duration-200 leading-none"
-              >
-                {item}
-              </a>
-            ))}
+            ].map((item) => {
+              const path = item === "SBA 7(a) Loans" ? "/sba-loans" : item === "Business Acquisition" ? "/business-acquisition" : item === "Strategic Guidance" ? "/strategic-financial-guidance" : "#";
+              return path === "#" ? (
+                <a
+                  key={item}
+                  href="#"
+                  className="text-[13px] text-white/45 hover:text-white/85 transition-colors duration-200 leading-none"
+                >
+                  {item}
+                </a>
+              ) : (
+                <Link
+                  key={item}
+                  to={path}
+                  className="text-[13px] text-white/45 hover:text-white/85 transition-colors duration-200 leading-none"
+                >
+                  {item}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 

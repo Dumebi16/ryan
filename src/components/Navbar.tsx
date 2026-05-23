@@ -46,7 +46,7 @@ export const Navbar = () => {
         { name: 'Strategic Financial Guidance', path: '/strategic-financial-guidance' },
       ]
     },
-    { name: 'Resources', path: '#blog' }, // Keeping #blog as target for now or update if section exists
+    { name: 'Resources', path: '/resources' },
     { name: 'Contact', path: '/contact' },
   ];
 
