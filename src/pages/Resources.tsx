@@ -91,14 +91,7 @@ export default function Resources() {
           <div className="flex justify-center items-center h-64 border border-white/10 bg-white/[0.02]">
             <p className="text-white/50 tracking-widest font-kiona uppercase text-sm">Loading resources...</p>
           </div>
-        ) : displayPosts.length === 0 ? (
-          <div className="flex flex-col justify-center items-center h-64 border border-white/10 bg-white/[0.02] gap-4">
-            <p className="text-white/50 tracking-widest font-kiona uppercase text-sm">
-              {posts.length === 0 ? "No articles published yet." : `No articles in ${activeCategory}.`}
-            </p>
-            <p className="text-white/30 text-sm">Check back soon for new insights.</p>
-          </div>
-        ) : (
+        ) : displayPosts.length === 0 ? null : (
           <>
             {/* Featured Post */}
             {featuredPost && (
