@@ -275,6 +275,65 @@ function WhatToExpectSection() {
   );
 }
 
+// ─── Booking Calendar ──────────────────────────────────────────────────────────
+function BookingCalendarSection() {
+  return (
+    <section id="booking-calendar" className="relative w-full bg-black py-20 sm:py-28 px-6 sm:px-10 lg:px-24 border-t border-white/[0.04]">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12 sm:mb-14">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="font-kiona text-[9px] sm:text-[10px] text-[#D4AF37] tracking-[0.25em] font-medium mb-6 block uppercase"
+          >
+            SCHEDULE A CALL
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="text-2xl sm:text-3xl md:text-4xl font-medium text-white leading-[1.05] tracking-tight mb-4"
+          >
+            Book Your Free Consultation
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="text-white/45 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto"
+          >
+            Choose a time that works for you. Ryan's AI assistant will help you get started right away.
+          </motion.p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
+          className="bg-[#0a0a0a]/60 backdrop-blur-lg border border-white/[0.08] p-4 sm:p-8 relative overflow-hidden flex justify-center"
+        >
+          <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
+          
+          <iframe
+            src="https://cal.com/ryan-kroge-nsvqdg/30min"
+            width="100%"
+            height="700"
+            frameBorder="0"
+            className="w-full rounded-md"
+            title="Book a call with Ryan"
+            style={{ minHeight: "700px" }}
+          ></iframe>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 // ─── Phone CTA ─────────────────────────────────────────────────────────────────
 function PhoneCTASection() {
   return (
@@ -330,9 +389,7 @@ function PhoneCTASection() {
                 Call (947) 218-1845
               </a>
               <a
-                href="https://cal.com/ryan-kroge-nsvqdg/30min"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#booking-calendar"
                 className="group inline-flex items-center gap-3 border border-white/20 text-white px-10 py-4 text-[11px] font-bold font-kiona tracking-widest uppercase transition-all duration-300 hover:bg-white hover:text-black hover:border-white w-full sm:w-auto justify-center"
               >
                 <Calendar className="w-4 h-4" strokeWidth={1.5} />
@@ -584,6 +641,7 @@ function ContactFormSection() {
                     </label>
                     <input
                       id="firstName"
+                      name="firstName"
                       type="text"
                       autoComplete="given-name"
                       placeholder="e.g. John"
@@ -592,7 +650,7 @@ function ContactFormSection() {
                       className={INPUT_BASE}
                     />
                     {errors.firstName && (
-                      <p className="text-red-400 text-xs mt-2">{errors.firstName}</p>
+                      <p id="firstName-error" role="alert" className="text-red-400 text-xs mt-2">{errors.firstName}</p>
                     )}
                   </div>
                   <div>
@@ -601,6 +659,7 @@ function ContactFormSection() {
                     </label>
                     <input
                       id="lastName"
+                      name="lastName"
                       type="text"
                       autoComplete="family-name"
                       placeholder="e.g. Smith"
@@ -609,7 +668,7 @@ function ContactFormSection() {
                       className={INPUT_BASE}
                     />
                     {errors.lastName && (
-                      <p className="text-red-400 text-xs mt-2">{errors.lastName}</p>
+                      <p id="lastName-error" role="alert" className="text-red-400 text-xs mt-2">{errors.lastName}</p>
                     )}
                   </div>
                 </div>
@@ -620,6 +679,7 @@ function ContactFormSection() {
                   </label>
                   <input
                     id="email"
+                    name="email"
                     type="email"
                     autoComplete="email"
                     placeholder="e.g. john@email.com"
@@ -628,7 +688,7 @@ function ContactFormSection() {
                     className={INPUT_BASE}
                   />
                   {errors.email && (
-                    <p className="text-red-400 text-xs mt-2">{errors.email}</p>
+                    <p id="email-error" role="alert" className="text-red-400 text-xs mt-2">{errors.email}</p>
                   )}
                 </div>
 
@@ -641,6 +701,7 @@ function ContactFormSection() {
                   </label>
                   <input
                     id="phone"
+                    name="phone"
                     type="tel"
                     autoComplete="tel"
                     placeholder="e.g. (555) 000-0000"
@@ -649,7 +710,7 @@ function ContactFormSection() {
                     className={INPUT_BASE}
                   />
                   {errors.phone && (
-                    <p className="text-red-400 text-xs mt-2">{errors.phone}</p>
+                    <p id="phone-error" role="alert" className="text-red-400 text-xs mt-2">{errors.phone}</p>
                   )}
                 </div>
 
@@ -660,6 +721,7 @@ function ContactFormSection() {
                   <div className="relative">
                     <select
                       id="type"
+                      name="type"
                       value={data.type}
                       onChange={set("type")}
                       className={`${INPUT_BASE} appearance-none pr-10 cursor-pointer`}
@@ -679,7 +741,7 @@ function ContactFormSection() {
                     />
                   </div>
                   {errors.type && (
-                    <p className="text-red-400 text-xs mt-2">{errors.type}</p>
+                    <p id="type-error" role="alert" className="text-red-400 text-xs mt-2">{errors.type}</p>
                   )}
                 </div>
 
@@ -689,6 +751,7 @@ function ContactFormSection() {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     rows={5}
                     placeholder="Tell Ryan what's on your mind..."
                     value={data.message}
@@ -696,7 +759,7 @@ function ContactFormSection() {
                     className={`${INPUT_BASE} resize-none`}
                   />
                   {errors.message && (
-                    <p className="text-red-400 text-xs mt-2">{errors.message}</p>
+                    <p id="message-error" role="alert" className="text-red-400 text-xs mt-2">{errors.message}</p>
                   )}
                 </div>
 
@@ -1029,6 +1092,7 @@ export default function Contact() {
       <ContactOptionsSection />
       <WhatToExpectSection />
       <PhoneCTASection />
+      <BookingCalendarSection />
       <ContactFormSection />
       <FAQSection />
       <ReassuranceSection />

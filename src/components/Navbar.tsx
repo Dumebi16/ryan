@@ -159,18 +159,16 @@ export const Navbar = () => {
               <Phone size={12} strokeWidth={2} />
               (947) 218-1845
             </a>
-            <a
-              href="https://cal.com/ryan-kroge-nsvqdg/30min"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/contact"
               className="hidden md:block font-kiona text-[11px] border border-white/20 px-8 py-3 hover:bg-white hover:text-black hover:border-white transition-all duration-300"
             >
               SCHEDULE A CALL
-            </a>
+            </Link>
             <div className="md:hidden flex items-center gap-3">
-              <a href="https://cal.com/ryan-kroge-nsvqdg/30min" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-all hover:scale-105" aria-label="Schedule a call">
+              <Link to="/contact" className="text-white hover:text-primary transition-all hover:scale-105" aria-label="Schedule a call">
                 <Calendar size={20} strokeWidth={1.5} />
-              </a>
+              </Link>
               <button className="text-white hover:text-primary transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
                 {isMenuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
               </button>
@@ -250,18 +248,19 @@ export const Navbar = () => {
                     )}
                   </motion.div>
                 ))}
-                <motion.a
-                  href="https://cal.com/ryan-kroge-nsvqdg/30min"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="font-kiona text-[10px] border border-white/20 text-white px-10 py-4 hover:bg-white hover:text-black transition-all tracking-[0.3em] mt-4 inline-block"
-                  onClick={() => setIsMenuOpen(false)}
                 >
-                  SCHEDULE A CALL
-                </motion.a>
+                  <Link
+                    to="/contact"
+                    className="font-kiona text-[10px] border border-white/20 text-white px-10 py-4 hover:bg-white hover:text-black transition-all tracking-[0.3em] mt-4 inline-block"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    SCHEDULE A CALL
+                  </Link>
+                </motion.div>
               </div>
               
               <motion.div 

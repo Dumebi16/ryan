@@ -173,13 +173,13 @@ export default function ResourcePost() {
         </div>
       )}
       <Helmet>
-        <title>{post.meta_title || post.title}</title>
+        <title>{post.title}</title>
         <meta name="description" content={post.meta_description || post.excerpt} />
         {post.canonical_url && <link rel="canonical" href={post.canonical_url} />}
         {post.noindex && <meta name="robots" content="noindex" />}
-        <meta property="og:title" content={post.meta_title || post.title} />
+        <meta property="og:title" content={post.title} />
         <meta property="og:description" content={post.meta_description || post.excerpt} />
-        <meta name="twitter:title" content={post.twitter_title || post.meta_title || post.title} />
+        <meta name="twitter:title" content={post.twitter_title || post.title} />
         <meta name="twitter:description" content={post.twitter_description || post.meta_description || post.excerpt} />
         {post.open_graph_image && <meta property="og:image" content={post.open_graph_image} />}
         
@@ -346,14 +346,14 @@ export default function ResourcePost() {
             </aside>
 
             {/* Article body */}
-            <div className="prose prose-invert prose-lg prose-headings:font-light prose-a:text-[#D4AF37] prose-a:no-underline hover:prose-a:underline max-w-none">
+            <div className="article-content w-full max-w-[760px] overflow-x-hidden">
               <div dangerouslySetInnerHTML={{ __html: contentWithIds }} />
               <div id="read-sentinel" />
             </div>
           </div>
         </div>
       ) : (
-        <div className="max-w-3xl mx-auto px-6 py-12 prose prose-invert prose-lg prose-headings:font-light prose-a:text-[#D4AF37] prose-a:no-underline hover:prose-a:underline">
+        <div className="max-w-[760px] mx-auto px-6 py-12 article-content overflow-x-hidden">
           {post.markdown_content?.trimStart().startsWith('<') ? (
             <div dangerouslySetInnerHTML={{ __html: post.markdown_content }} />
           ) : (

@@ -299,17 +299,7 @@ export default function PostEditor({
                         )}
                       </div>
                     </div>
-                    <div>
-                      <label className="block text-[10px] uppercase font-kiona text-white/40 tracking-wider mb-2">
-                        Read Time (Mins)
-                      </label>
-                      <input
-                        type="number"
-                        value={draft.read_time}
-                        onChange={e => setDraft({ ...draft, read_time: e.target.value })}
-                        className={`w-full p-3 transition-colors ${tInput}`}
-                      />
-                    </div>
+
                   </div>
 
                   {/* Cover image */}

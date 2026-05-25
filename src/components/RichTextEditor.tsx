@@ -261,6 +261,7 @@ function getBlockType(editor: any): string {
 // ─── Toolbar ──────────────────────────────────────────────────────────────────
 
 const MenuBar = ({ editor, onImageUpload }: { editor: any; onImageUpload: () => void }) => {
+  const [, forceUpdate] = useState(0);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -275,6 +276,13 @@ const MenuBar = ({ editor, onImageUpload }: { editor: any; onImageUpload: () => 
     document.addEventListener('mousedown', close);
     return () => document.removeEventListener('mousedown', close);
   }, [dropdownOpen]);
+
+  useEffect(() => {
+    if (!editor) return;
+    const update = () => forceUpdate(n => n + 1);
+    editor.on('transaction', update);
+    return () => { editor.off('transaction', update); };
+  }, [editor]);
 
   const applyLink = useCallback(() => {
     if (linkUrl.trim()) {
@@ -412,7 +420,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
     content: value,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert prose-lg max-w-none focus:outline-none min-h-[400px] p-6 text-white/90 font-light',
+        class: 'article-content focus:outline-none min-h-[400px] p-6',
       },
       handleDrop(view, event, _slice, moved) {
         if (!moved && event.dataTransfer?.files?.[0]) {
@@ -479,14 +487,6 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
           pointer-events: none;
           height: 0;
         }
-        .tiptap a { color: #D4AF37; text-decoration: underline; text-underline-offset: 3px; }
-        .tiptap hr { border-color: rgba(255,255,255,0.15); margin: 2rem 0; }
-        .tiptap h1 { font-size: 2em; font-weight: 300; }
-        .tiptap h2 { font-size: 1.5em; font-weight: 300; }
-        .tiptap h3 { font-size: 1.25em; font-weight: 400; }
-        .tiptap blockquote { border-left: 3px solid #D4AF37; padding-left: 1rem; color: rgba(255,255,255,0.6); }
-        .tiptap ul { list-style: disc; padding-left: 1.5rem; }
-        .tiptap ol { list-style: decimal; padding-left: 1.5rem; }
       `}} />
     </div>
   );
