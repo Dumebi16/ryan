@@ -95,51 +95,54 @@ export default function ResourcePost() {
   useEffect(() => {
     async function fetchPost() {
       if (!slug) return;
-
-      let session = null;
-      // Preview mode: only authenticated admins can view drafts
-      if (isPreview) {
-        const { data } = await supabase.auth.getSession();
-        session = data.session;
-        if (!session) {
-          setPost(null);
-          setLoading(false);
-          return;
-        }
-      }
-
-      let query = supabase.from("posts").select("*").eq("slug", slug);
-      
-      // If not in authenticated preview mode, only allow published posts
-      if (!isPreview || !session) {
-        query = query.eq("is_published", true);
-      }
-
-      const { data, error } = await query.single();
-        
-      if (error) {
-        console.error("Error fetching post:", error);
-      } else {
-        setPost(data);
-
-        // Fetch FAQs if post exists
-        if (data) {
-          const { data: faqData } = await supabase
-            .from("post_faqs")
-            .select("*")
-            .eq("post_id", data.id)
-            .order("position", { ascending: true });
-
-          setFaqs(faqData || []);
-
-          // Track post_view once per session (skip in preview)
-          if (!isPreview && !hasTracked(`view_${data.slug}`)) {
-            markTracked(`view_${data.slug}`);
-            trackEvent("post_view", { id: data.id, slug: data.slug, category: data.category });
+      try {
+        let session = null;
+        // Preview mode: only authenticated admins can view drafts
+        if (isPreview) {
+          const { data } = await supabase.auth.getSession();
+          session = data.session;
+          if (!session) {
+            setPost(null);
+            return;
           }
         }
+
+        let query = supabase.from("posts").select("*").eq("slug", slug);
+        
+        // If not in authenticated preview mode, only allow published posts
+        if (!isPreview || !session) {
+          query = query.eq("is_published", true);
+        }
+
+        const { data, error } = await query.single();
+          
+        if (error) {
+          console.error("Error fetching post:", error);
+        } else {
+          setPost(data);
+
+          // Fetch FAQs if post exists
+          if (data) {
+            const { data: faqData } = await supabase
+              .from("post_faqs")
+              .select("*")
+              .eq("post_id", data.id)
+              .order("position", { ascending: true });
+
+            setFaqs(faqData || []);
+
+            // Track post_view once per session (skip in preview)
+            if (!isPreview && !hasTracked(`view_${data.slug}`)) {
+              markTracked(`view_${data.slug}`);
+              trackEvent("post_view", { id: data.id, slug: data.slug, category: data.category });
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Exception fetching post:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
 
     fetchPost();

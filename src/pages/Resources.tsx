@@ -13,16 +13,21 @@ export default function Resources() {
 
   useEffect(() => {
     async function fetchPosts() {
-      const { data: { session } } = await supabase.auth.getSession();
-      const admin = !!session;
-      setIsAdmin(admin);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const admin = !!session;
+        setIsAdmin(admin);
 
-      let query = supabase.from("posts").select("*").eq("is_published", true).order("published_at", { ascending: false });
+        let query = supabase.from("posts").select("*").eq("is_published", true).order("published_at", { ascending: false });
 
-      const { data, error } = await query;
-      if (error) console.error("Error fetching posts:", error);
-      else setPosts(data || []);
-      setLoading(false);
+        const { data, error } = await query;
+        if (error) console.error("Error fetching posts:", error);
+        else setPosts(data || []);
+      } catch (err) {
+        console.error("Exception fetching posts:", err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchPosts();
   }, []);
