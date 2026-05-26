@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/react";
 import { ArrowRight, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-import ryanLaptopImg from '@/photos/Ryan Kroge pics/ryan using his laptop.jpg';
+import ryanLaptopImg from '@/photos/Ryan Kroge pics/ryan using his laptop.webp';
 
 // ---------------------------------------------------------------------------
 // Dot ring helper — places n dots evenly around a circle

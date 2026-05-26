@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, ReactNode, useState } from "react";
-import ryan80 from "../../photos/Ryan Kroge pics/Ryan_Kroge-80.jpg";
+import ryan80 from "../../photos/Ryan Kroge pics/Ryan_Kroge-80.webp";
 import {
   Building2,
   TrendingUp,

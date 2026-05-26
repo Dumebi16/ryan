@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
 import { useEffect, useRef, ReactNode } from "react";
 import { Phone, FileText, UserCheck, CheckCircle } from "lucide-react";
-import heroImg from '@/photos/Ryan Kroge pics/expanded ryan .png';
-import splitScreenImg from '@/photos/Ryan Kroge pics/Ryan_Kroge-21 BW-2.jpg';
-import missionImg from '@/photos/Ryan Kroge pics/Ryan_Kroge-53 BW.jpg';
+import heroImg from '@/photos/Ryan Kroge pics/expanded ryan .webp';
+import splitScreenImg from '@/photos/Ryan Kroge pics/Ryan_Kroge-21 BW-2.webp';
+import missionImg from '@/photos/Ryan Kroge pics/Ryan_Kroge-53 BW.webp';
 
 // Component to handle individual line scroll-scrubbed opacity using Vanilla JS
 function RevealLine({ children, isSpace = false }: { children?: ReactNode, isSpace?: boolean }) {

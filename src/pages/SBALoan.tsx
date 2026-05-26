@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, ReactNode } from "react";
-import ryan32 from "../../photos/Ryan Kroge pics/Ryan_Kroge-32 (1).jpg";
-import ryan85 from "../../photos/Ryan Kroge pics/Ryan_Kroge-85 BW.jpg";
+import ryan32 from "../../photos/Ryan Kroge pics/Ryan_Kroge-32 (1).webp";
+import ryan85 from "../../photos/Ryan Kroge pics/Ryan_Kroge-85 BW.webp";
 import {
   DollarSign,
   Calendar,
