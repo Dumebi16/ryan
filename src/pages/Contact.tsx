@@ -490,7 +490,10 @@ function ContactFormSection() {
       return;
     }
 
-    setErrors({});
+    setErrors((prev) => {
+      const { _submit, ...rest } = prev;
+      return rest;
+    });
     setFormState("submitting");
 
     try {
@@ -534,6 +537,7 @@ function ContactFormSection() {
       setFormState("success");
     } catch (err) {
       console.error("Form submission error:", err);
+      setErrors((prev) => ({ ...prev, _submit: err instanceof Error ? err.message : "Something went wrong." }));
       setFormState("error");
     }
   };
@@ -797,6 +801,19 @@ function ContactFormSection() {
                 </label>
 
                 <div className="flex flex-col gap-4 pt-2">
+                  {formState === "error" && (
+                    <div className="bg-red-500/10 border border-red-500/20 px-4 py-3 text-red-400 text-sm flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                      <p>
+                        {errors._submit || "Something went wrong. Please try again or call "}
+                        {!errors._submit && (
+                          <a href="tel:9472181845" className="underline hover:text-red-300">
+                            (947) 218-1845
+                          </a>
+                        )}
+                      </p>
+                    </div>
+                  )}
                   <button
                     type="submit"
                     disabled={formState === "submitting"}

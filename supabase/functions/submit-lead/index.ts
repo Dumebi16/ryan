@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
       const verifyData = await verifyRes.json();
       
       if (!verifyData.success) {
-        throw new Error("CAPTCHA verification failed. Are you a robot?");
+        throw new Error("CAPTCHA verification failed: " + JSON.stringify(verifyData["error-codes"] || verifyData));
       }
     }
 
@@ -92,9 +92,9 @@ Deno.serve(async (req) => {
 
   } catch (err) {
     console.error("Function error:", err);
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500,
-      headers: { ...corsHeaders(), "Content-Type": "application/json" },
-    });
+      return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), {
+        status: 200,
+        headers: { ...corsHeaders(), "Content-Type": "application/json" },
+      });
   }
 });
