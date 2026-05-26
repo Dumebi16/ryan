@@ -9,6 +9,7 @@ import Contact from "./pages/Contact";
 import Resources from "./pages/Resources";
 import ResourcePost from "./pages/ResourcePost";
 import Admin from "./pages/Admin";
+import { PageTracker } from "./hooks/usePageTracking";
 
 import { HelmetProvider } from "react-helmet-async";
 
@@ -18,6 +19,7 @@ export default function App() {
   return (
     <HelmetProvider>
       <BrowserRouter>
+        <PageTracker />
         <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
