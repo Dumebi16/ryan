@@ -4,60 +4,69 @@ import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
+const SITE_URL = 'https://www.ryankroge.com';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function esc(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 export default async function handler(req, res) {
   const { slug } = req.query;
 
   try {
-    // Try to load index.html from dist (production) or root (local dev)
+    // Read built index.html (Vercel bundles it via includeFiles)
     let htmlPath = path.join(process.cwd(), 'dist', 'index.html');
     if (!fs.existsSync(htmlPath)) {
       htmlPath = path.join(process.cwd(), 'index.html');
     }
-    
     let html = fs.readFileSync(htmlPath, 'utf8');
 
     if (slug) {
       const { data: post, error } = await supabase
         .from('posts')
-        .select('title, excerpt, cover_image')
+        .select('title, slug, excerpt, cover_image_url, open_graph_image, meta_title, meta_description, twitter_title, twitter_description, is_published')
         .eq('slug', slug)
         .single();
 
-      if (post && !error) {
-        const title = post.title ? post.title.replace(/"/g, '&quot;') : '';
-        const description = post.excerpt ? post.excerpt.replace(/"/g, '&quot;') : '';
-        const image = post.cover_image || '';
-        const currentUrl = `https://${req.headers.host}/resources/${slug}`;
-        
+      if (post && !error && post.is_published) {
+        const pageTitle  = esc(post.meta_title  || post.title  || 'Ryan Kroge | SBA Loan Specialist');
+        const desc       = esc(post.meta_description || post.excerpt || 'Expert SBA loan guidance by Ryan Kroge.');
+        const ogImage    = post.open_graph_image || post.cover_image_url || `${SITE_URL}/og-default.png`;
+        const twitterTitle = esc(post.twitter_title || post.meta_title || post.title || pageTitle);
+        const twitterDesc  = esc(post.twitter_description || post.meta_description || post.excerpt || desc);
+        const pageUrl    = `${SITE_URL}/resources/${slug}`;
+
         const ogTags = `
-          <meta property="og:title" content="${title}" />
-          <meta property="og:description" content="${description}" />
-          <meta property="og:image" content="${image}" />
-          <meta property="og:type" content="article" />
-          <meta property="og:url" content="${currentUrl}" />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="${title}" />
-          <meta name="twitter:description" content="${description}" />
-          <meta name="twitter:image" content="${image}" />
-        `;
-        
-        // Inject tags right before </head>
-        html = html.replace('</head>', `${ogTags}</head>`);
-        
-        // Replace default <title>
-        html = html.replace(/<title>.*?<\/title>/, `<title>${title} | Ryan Kroge</title>`);
+  <!-- Dynamic OG / Twitter Card for blog post -->
+  <meta name="description" content="${desc}" />
+  <meta property="og:type"        content="article" />
+  <meta property="og:site_name"   content="Ryan Kroge | SBA Loan Specialist" />
+  <meta property="og:url"         content="${pageUrl}" />
+  <meta property="og:title"       content="${pageTitle}" />
+  <meta property="og:description" content="${desc}" />
+  <meta property="og:image"       content="${ogImage}" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:site"        content="@ryankroge" />
+  <meta name="twitter:title"       content="${twitterTitle}" />
+  <meta name="twitter:description" content="${twitterDesc}" />
+  <meta name="twitter:image"       content="${ogImage}" />`;
+
+        // Inject tags and update <title>
+        html = html.replace('</head>', `${ogTags}\n</head>`);
+        html = html.replace(/<title>[^<]*<\/title>/, `<title>${pageTitle}</title>`);
       }
     }
 
-    res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate'); 
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    // Cache 1 hr on edge, serve stale while revalidating for 24 hrs
+    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
     res.status(200).send(html);
   } catch (err) {
-    console.error('Error in og-post handler:', err);
-    // Fallback: just send something rather than crashing
-    res.status(500).send("Error generating page metadata");
+    console.error('[og-post] Error:', err);
+    res.status(500).send('Error generating page');
   }
 }
