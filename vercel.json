@@ -10,7 +10,7 @@
     { "source": "/strategic-financial-guidance", "destination": "/api/og-post?path=/strategic-financial-guidance" },
     { "source": "/contact", "destination": "/api/og-post?path=/contact" },
     { "source": "/resources", "destination": "/api/og-post?path=/resources" },
-    { "source": "/resources/:slug", "destination": "/api/og-post?slug=$slug" },
+    { "source": "/resources/:slug", "destination": "/api/og-post" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "functions": {
