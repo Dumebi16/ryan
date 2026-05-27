@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
+import { SEO } from "../components/SEO";
 import { useState, ChangeEvent } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { supabase } from "../lib/supabase";
@@ -532,6 +533,16 @@ function ContactFormSection() {
           subscribe_newsletter: data.newsletter,
         },
       }).catch(console.error);
+
+      // 3. If they opted into the newsletter, trigger the newsletter subscription automation
+      if (data.newsletter) {
+        supabase.functions.invoke("subscribe-newsletter", {
+          body: {
+            email: data.email,
+            post_slug: "contact-form",
+          },
+        }).catch(console.error);
+      }
 
       recordSubmission();
       setFormState("success");
@@ -1105,6 +1116,12 @@ function FinalCTASection() {
 export default function Contact() {
   return (
     <div className="relative bg-black min-h-screen">
+      <SEO
+        title="Contact Ryan Kroge | Book a Free SBA Loan Consultation"
+        description="Ready to get your business funded? Book a free 30-minute consultation with Ryan Kroge, Detroit-based SBA Loan Specialist. Get a real answer within 24 hours."
+        path="/contact"
+        type="website"
+      />
       <HeroSection />
       <ContactOptionsSection />
       <WhatToExpectSection />

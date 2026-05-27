@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import CTASection from "../components/CTASection";
+import { SEO } from "../components/SEO";
 
 export default function Resources() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -47,6 +48,12 @@ export default function Resources() {
 
   return (
     <div className="bg-[#0a0a0a] min-h-screen text-white/90 selection:bg-[#D4AF37] selection:text-black font-light">
+      <SEO
+        title="SBA Loan Insights & Small Business Resources — Ryan Kroge"
+        description="Expert articles on SBA financing, business acquisition, cash flow management, and small business growth strategies from Ryan Kroge, Detroit’s trusted SBA Loan Specialist."
+        path="/resources"
+        type="website"
+      />
 
       {/* Archive Hero */}
       <div className="pt-32 md:pt-48 pb-16 px-6">

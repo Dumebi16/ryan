@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "motion/react";
+import { SEO } from "../components/SEO";
 import { useEffect, useRef, ReactNode, useState } from "react";
 import {
   DollarSign,
@@ -931,6 +932,12 @@ function FinalCTASection() {
 export default function StrategicFinancialGuidance() {
   return (
     <div className="relative bg-black min-h-screen">
+      <SEO
+        title="Strategic Financial Guidance for Small Business — Ryan Kroge"
+        description="Get expert strategic financial guidance from Ryan Kroge. Cash flow management, financial forecasting, loan readiness, and growth strategy for small business owners across the U.S."
+        path="/strategic-financial-guidance"
+        type="website"
+      />
       <HeroSection />
       <RealityCheckSection />
       <WhoThisIsForSection />

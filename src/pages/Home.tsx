@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/
 import { ArrowRight, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import ryanLaptopImg from '@/photos/Ryan Kroge pics/ryan using his laptop.webp';
+import { SEO } from "../components/SEO";
 
 // ---------------------------------------------------------------------------
 // Dot ring helper — places n dots evenly around a circle
@@ -393,6 +394,12 @@ const FinalCTASection = () => {
 export default function Home() {
   return (
     <>
+      <SEO
+        title="Ryan Kroge | SBA Loan Specialist — Detroit, MI"
+        description="Get funding to grow your business. Ryan Kroge is a Detroit-based SBA Loan Specialist with 25+ years helping business owners buy, sell, and grow through SBA financing."
+        path="/"
+        type="website"
+      />
       <div className="absolute top-0 left-0 right-0 h-screen z-0 overflow-hidden">
         <motion.img src="https://imagedelivery.net/0vuc79pYCDCfiNfFkSs8YA/74d0e1be-90ed-478d-c169-8e4752da2900/public" alt="" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, ease: "easeOut" }} className="absolute inset-0 w-full h-full object-cover object-center md:object-right md:translate-x-[4%] md:scale-[1.04] md:[filter:contrast(1.07)_brightness(1.03)]" referrerPolicy="no-referrer" />
         <div className="absolute inset-0 hidden md:block" style={{ background: "linear-gradient(to right, #000000 18%, rgba(0,0,0,0.85) 36%, rgba(0,0,0,0.15) 68%, transparent 100%)" }} />

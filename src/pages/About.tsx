@@ -4,6 +4,7 @@ import { Phone, FileText, UserCheck, CheckCircle } from "lucide-react";
 import heroImg from '@/photos/Ryan Kroge pics/expanded ryan .webp';
 import splitScreenImg from '@/photos/Ryan Kroge pics/Ryan_Kroge-21 BW-2.webp';
 import missionImg from '@/photos/Ryan Kroge pics/Ryan_Kroge-53 BW.webp';
+import { SEO } from "../components/SEO";
 
 // Component to handle individual line scroll-scrubbed opacity using Vanilla JS
 function RevealLine({ children, isSpace = false }: { children?: ReactNode, isSpace?: boolean }) {
@@ -413,6 +414,12 @@ function MissionSection() {
 export default function About() {
   return (
     <div className="relative bg-black min-h-screen">
+      <SEO
+        title="About Ryan Kroge | SBA Loan Specialist — Detroit, MI"
+        description="Meet Ryan Kroge — a Detroit-based SBA Loan Specialist with 25+ years of experience helping small business owners access SBA financing to buy, grow, and sell businesses nationwide."
+        path="/about"
+        type="website"
+      />
       {/* About Hero Section */}
       <section 
         className="relative w-full flex flex-col items-center justify-start pt-32 sm:pt-40 min-h-[90vh] md:min-h-[100vh] lg:min-h-[110vh]"

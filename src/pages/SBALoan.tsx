@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, ReactNode } from "react";
 import ryan32 from "../../photos/Ryan Kroge pics/Ryan_Kroge-32 (1).webp";
 import ryan85 from "../../photos/Ryan Kroge pics/Ryan_Kroge-85 BW.webp";
+import { SEO } from "../components/SEO";
 import {
   DollarSign,
   Calendar,
@@ -817,6 +818,12 @@ function FinalCTASection() {
 export default function SBALoan() {
   return (
     <div className="relative bg-black min-h-screen">
+      <SEO
+        title="SBA Loans | Expert SBA 7(a) & 504 Financing — Ryan Kroge"
+        description="Access SBA loans from $300K to $5M with terms up to 25 years and no balloon payments. Ryan Kroge helps business owners qualify, apply, and close SBA 7(a) and 504 loans fast."
+        path="/sba-loans"
+        type="website"
+      />
       <HeroSection />
       <HighlightsStrip />
       <WhatIsSBASection />

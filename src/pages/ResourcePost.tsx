@@ -176,15 +176,22 @@ export default function ResourcePost() {
         </div>
       )}
       <Helmet>
-        <title>{post.title}</title>
+        <title>{post.meta_title || post.title}</title>
         <meta name="description" content={post.meta_description || post.excerpt} />
         {post.canonical_url && <link rel="canonical" href={post.canonical_url} />}
         {post.noindex && <meta name="robots" content="noindex" />}
-        <meta property="og:title" content={post.title} />
+        
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={post.meta_title || post.title} />
         <meta property="og:description" content={post.meta_description || post.excerpt} />
-        <meta name="twitter:title" content={post.twitter_title || post.title} />
+        <meta property="og:url" content={`https://ryankroge.com/resources/${post.slug}`} />
+        <meta property="og:site_name" content="Ryan Kroge - SBA Loan Specialist" />
+        {(post.open_graph_image || post.cover_image_url) && <meta property="og:image" content={post.open_graph_image || post.cover_image_url} />}
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.twitter_title || post.meta_title || post.title} />
         <meta name="twitter:description" content={post.twitter_description || post.meta_description || post.excerpt} />
-        {post.open_graph_image && <meta property="og:image" content={post.open_graph_image} />}
+        {(post.open_graph_image || post.cover_image_url) && <meta name="twitter:image" content={post.open_graph_image || post.cover_image_url} />}
         
         {/* Article JSON-LD */}
         <script type="application/ld+json">

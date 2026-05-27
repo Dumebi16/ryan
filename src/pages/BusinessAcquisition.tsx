@@ -1,4 +1,5 @@
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
+import { SEO } from "../components/SEO";
 import { useEffect, useRef, ReactNode, useState } from "react";
 import ryan80 from "../../photos/Ryan Kroge pics/Ryan_Kroge-80.webp";
 import {
@@ -867,6 +868,12 @@ function FinalCTASection() {
 export default function BusinessAcquisition() {
   return (
     <div className="relative bg-black min-h-screen">
+      <SEO
+        title="Business Acquisition Financing | Buy or Sell with SBA Loans — Ryan Kroge"
+        description="Buying or selling a business? Ryan Kroge helps buyers acquire businesses with as little as 10% down using SBA financing, and guides sellers to exit on their terms."
+        path="/business-acquisition"
+        type="website"
+      />
       <HeroSection />
       <QuickStatsStrip />
       <ProblemSection />
