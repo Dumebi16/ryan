@@ -1,7 +1,6 @@
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useScroll } from "motion/react";
 import { useEffect, useRef, ReactNode } from "react";
-import ryan32 from "../../photos/Ryan Kroge pics/Ryan_Kroge-32 (1).webp";
-import ryan85 from "../../photos/Ryan Kroge pics/Ryan_Kroge-85 BW.webp";
+
 import { SEO } from "../components/SEO";
 import {
   DollarSign,
@@ -75,11 +74,6 @@ function RevealLine({
 // ─── Hero ──────────────────────────────────────────────────────────────────────
 function HeroSection() {
   const { scrollY } = useScroll();
-  const rotateLeft = useTransform(scrollY, [0, 800], [-12, 0]);
-  const rotateRight = useTransform(scrollY, [0, 800], [12, 0]);
-  const scaleDyn = useTransform(scrollY, [0, 800], [1, 1.25]);
-  const yDynLeft = useTransform(scrollY, [0, 800], [0, -100]);
-  const yDynRight = useTransform(scrollY, [0, 800], [0, 100]);
 
   return (
     <section className="relative w-full flex flex-col items-center justify-center min-h-[95vh] px-6 pt-36 sm:pt-48 pb-20 overflow-hidden">
@@ -92,22 +86,7 @@ function HeroSection() {
         }}
       />
 
-      {/* Dynamic Background Images */}
-      <motion.div
-        style={{ scale: scaleDyn, rotate: rotateLeft, y: yDynLeft }}
-        className="absolute left-[-25%] sm:left-[-15%] md:left-[-5%] lg:left-[0%] top-[10%] md:top-[12%] w-40 sm:w-48 md:w-56 lg:w-64 aspect-[3/4] opacity-[0.25] md:opacity-[0.35] pointer-events-none overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        <img src={ryan32} alt="" className="w-full h-full object-cover grayscale" />
-      </motion.div>
 
-      <motion.div
-        style={{ scale: scaleDyn, rotate: rotateRight, y: yDynRight }}
-        className="absolute right-[-25%] sm:right-[-15%] md:right-[-5%] lg:right-[0%] top-[45%] md:top-[40%] w-40 sm:w-48 md:w-56 lg:w-64 aspect-[3/4] opacity-[0.25] md:opacity-[0.35] pointer-events-none overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-black/40 z-10" />
-        <img src={ryan85} alt="" className="w-full h-full object-cover grayscale" />
-      </motion.div>
 
       <div className="relative z-20 flex flex-col items-center text-center max-w-4xl mx-auto my-auto">
         <motion.span
