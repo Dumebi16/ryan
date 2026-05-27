@@ -130,11 +130,6 @@ const WHY_CHOOSE_ME_CARDS = [
     num: "04.",
     title: "I'm backed by an elite team.",
     desc: "SBA financing is complex. My team has seen every edge case, exception, and creative structure in the book. You're not getting one person's opinion — you're getting decades of collective expertise."
-  },
-  {
-    num: "05.",
-    title: "I'm backed by an elite team.",
-    desc: "SBA financing is complex. My team has seen every edge case, exception, and creative structure in the book. You're not getting one person's opinion — you're getting decades of collective expertise."
   }
 ];
 
