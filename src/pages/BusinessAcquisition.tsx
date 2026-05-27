@@ -1,7 +1,7 @@
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { SEO } from "../components/SEO";
 import { useEffect, useRef, ReactNode, useState } from "react";
-import ryan80 from "../../photos/Ryan Kroge pics/Ryan_Kroge-80.webp";
+const ryan80 = "https://pub-b1a4206ab34045348c40722678aec845.r2.dev/Ryan_Kroge-80.jpg";
 import {
   Building2,
   TrendingUp,
