@@ -395,8 +395,8 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="Ryan Kroge | SBA Loan Specialist — Detroit, MI"
-        description="Get funding to grow your business. Ryan Kroge is a Detroit-based SBA Loan Specialist with 25+ years helping business owners buy, sell, and grow through SBA financing."
+        title="Ryan Kroge | Expert SBA Loan Specialist — Detroit, MI"
+        description="Get funding to grow your business."
         path="/"
         type="website"
       />
