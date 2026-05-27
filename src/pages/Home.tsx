@@ -279,7 +279,7 @@ const TestimonialsSection = () => {
       <motion.span initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true, amount: 0.3 }} className="font-kiona text-[9px] text-white/30 block mb-16 md:mb-20 tracking-widest">CLIENT RESULTS</motion.span>
       <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.08 }} viewport={{ once: true, amount: 0.2 }} className="flex items-start gap-6 md:gap-12 max-w-4xl">
         <AnimatePresence mode="wait">
-          <motion.span key={`num-${active}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28 }} className="text-[72px] md:text-[112px] font-light leading-none text-white/[0.06] select-none shrink-0 tabular-nums" style={{ fontFeatureSettings: '"tnum"' }}>{String(active + 1).padStart(2, "0")}</motion.span>
+          <motion.span key={`num-${active}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28 }} className="text-[72px] md:text-[112px] font-light leading-none text-white/[0.06] select-none shrink-0 tabular-nums" style={{ fontFeatureSettings: '"tnum"' }} data-clarity-unmask="true">{String(active + 1).padStart(2, "0")}</motion.span>
         </AnimatePresence>
         <div className="flex-1 pt-3 md:pt-6 min-w-0">
           <AnimatePresence mode="wait" custom={direction}>
@@ -316,7 +316,7 @@ const AboutSection = () => {
               <motion.p initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.14 }} viewport={{ once: true, amount: 0.3 }} className="text-[15px] text-white/50 leading-relaxed mb-10">Ryan Kroge is an SBA loan specialist and business acquisition consultant based in Detroit and serving clients nationwide. With more than 25 years of lending and business experience, he helps business owners move through financing decisions with confidence, strategy, and a clear understanding of the path ahead.</motion.p>
               <motion.div initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} viewport={{ once: true, amount: 0.3 }}><Link to="/about" className="font-kiona text-[11px] border border-white/20 text-white px-10 py-4 hover:bg-white hover:text-black hover:border-white transition-all duration-300 inline-flex items-center gap-3">LEARN MORE ABOUT RYAN <ArrowRight size={12} strokeWidth={1.5} /></Link></motion.div>
             </div>
-            <div className="flex items-end justify-between pt-10 border-t border-white/[0.08]">
+            <div className="flex items-end justify-between pt-10 border-t border-white/[0.08]" data-clarity-unmask="true">
               <div><p className="text-[2rem] font-light text-white leading-none mb-1">25+</p><p className="font-kiona text-[7px] text-white/30 tracking-widest">YEARS EXPERIENCE</p></div>
               <div className="text-right"><p className="text-[2rem] font-light text-white leading-none mb-1">100+</p><p className="font-kiona text-[7px] text-white/30 tracking-widest">BUSINESSES HELPED</p></div>
             </div>
@@ -423,7 +423,7 @@ export default function Home() {
             </motion.div>
             <div className="grid grid-cols-2 gap-x-12 gap-y-10 md:gap-x-16 md:gap-y-12">
               {[ { value: "25+", label: "Years Experience" }, { value: "1000+", label: "Businesses Helped" }, { value: "24 Hours", label: "Initial Qualification Guidance" }, { value: "$500K–$10M", label: "Typical Loan Range" }, { value: "Nationwide", label: "Lending Support" } ].map(({ value, label }, i) => (
-                <motion.div key={label} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: i * 0.07 }} viewport={{ once: true }} className="flex flex-col"><span className="text-[2.25rem] sm:text-[2.75rem] md:text-[3.25rem] font-medium text-black leading-none">{value}</span><span className="font-kiona text-[8px] text-black/40 mt-3">{label}</span></motion.div>
+                <motion.div key={label} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: i * 0.07 }} viewport={{ once: true }} className="flex flex-col"><span className="text-[2.25rem] sm:text-[2.75rem] md:text-[3.25rem] font-medium text-black leading-none" data-clarity-unmask="true">{value}</span><span className="font-kiona text-[8px] text-black/40 mt-3">{label}</span></motion.div>
               ))}
             </div>
           </div>
