@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "motion/react";
 import { ArrowRight, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-const ryanLaptopImg = 'https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan%20using%20his%20laptop.jpg';
+const ryanLaptopImg = 'https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_using_his_laptop.webp';
 import { SEO } from "../components/SEO";
 
 // ---------------------------------------------------------------------------
@@ -294,7 +294,7 @@ const TestimonialsSection = () => {
         </div>
       </motion.div>
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.2 }} viewport={{ once: true, amount: 0.3 }} className="flex items-center justify-between max-w-4xl mt-16 md:mt-20">
-        <div className="flex items-center gap-8"><div className="flex items-center gap-3">{TESTIMONIALS.map((_, i) => (<button key={i} onClick={() => handleChange(i)} className="group py-4"><span className={`block h-px transition-all duration-500 ease-out ${i === active ? "w-12 bg-[#D4AF37]" : "w-6 bg-white/[0.18] group-hover:w-9 group-hover:bg-white/[0.38]"}`} /></button>))}</div><span className="font-kiona text-[8px] text-white/22 tracking-widest">{String(active + 1).padStart(2, "0")} / {String(TESTIMONIALS.length).padStart(2, "0")}</span></div>
+        <div className="flex items-center gap-8"><div className="flex items-center gap-3">{TESTIMONIALS.map((t, i) => (<button key={i} onClick={() => handleChange(i)} aria-label={`Go to testimonial ${i + 1}: ${t.author}`} className="group py-4"><span className={`block h-px transition-all duration-500 ease-out ${i === active ? "w-12 bg-[#D4AF37]" : "w-6 bg-white/[0.18] group-hover:w-9 group-hover:bg-white/[0.38]"}`} /></button>))}</div><span className="font-kiona text-[8px] text-white/22 tracking-widest">{String(active + 1).padStart(2, "0")} / {String(TESTIMONIALS.length).padStart(2, "0")}</span></div>
         <div className="flex items-center gap-1"><button onClick={handlePrev} aria-label="Previous testimonial" className="p-2.5 text-white/30 hover:text-white/70 transition-colors duration-200"><ChevronLeft size={18} strokeWidth={1.5} /></button><button onClick={handleNext} aria-label="Next testimonial" className="p-2.5 text-white/30 hover:text-white/70 transition-colors duration-200"><ChevronRight size={18} strokeWidth={1.5} /></button></div>
       </motion.div>
       <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.25 }} viewport={{ once: true, amount: 0.3 }} className="mt-14 md:mt-16 max-w-4xl"><button className="font-kiona text-[11px] border border-white/20 text-white px-10 py-4 hover:bg-white hover:text-black hover:border-white transition-all duration-300 inline-flex items-center gap-3">VIEW MORE RECOMMENDATIONS <ArrowRight size={12} strokeWidth={1.5} /></button></motion.div>
@@ -307,7 +307,7 @@ const AboutSection = () => {
     <section className="bg-black px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
       <div className="border border-white/[0.1] overflow-hidden">
         <div className="flex flex-col lg:flex-row min-h-[72vh]">
-          <div className="relative w-full h-[72vw] sm:h-[56vw] lg:h-auto lg:w-[44%] overflow-hidden shrink-0"><img src={ryanLaptopImg} alt="Ryan Kroge — SBA Loan Specialist" className="absolute inset-0 w-full h-full object-cover object-center grayscale" /><span className="absolute bottom-6 left-6 font-kiona text-[7px] text-white/40 tracking-widest">DETROIT, MI</span></div>
+          <div className="relative w-full h-[72vw] sm:h-[56vw] lg:h-auto lg:w-[44%] overflow-hidden shrink-0"><img src={ryanLaptopImg} alt="Ryan Kroge working on his laptop" loading="lazy" className="absolute inset-0 w-full h-full object-cover object-center grayscale" /><span className="absolute bottom-6 left-6 font-kiona text-[7px] text-white/40 tracking-widest">DETROIT, MI</span></div>
           <div className="flex-1 flex flex-col justify-between px-8 sm:px-12 lg:px-16 xl:px-20 py-12 lg:py-14 border-t lg:border-t-0 lg:border-l border-white/[0.08]">
             <p className="font-kiona text-[8px] text-white/28 tracking-[0.22em]">RYAN KROGE&nbsp;&nbsp;·&nbsp;&nbsp;SBA LOAN SPECIALIST</p>
             <div className="flex-1 flex flex-col justify-center py-12 lg:py-0 max-w-lg">
@@ -396,12 +396,13 @@ export default function Home() {
     <>
       <SEO
         title="Ryan Kroge | Expert SBA Loan Specialist — Detroit, MI"
-        description="Get funding to grow your business."
+        description="Need capital to buy or grow a business? Ryan Kroge is a Detroit-based SBA Loan Specialist with 25+ years of experience structuring SBA 7(a) and 504 loans nationwide."
         path="/"
         type="website"
+        faqs={FAQ_ITEMS}
       />
       <div className="absolute top-0 left-0 right-0 h-screen z-0 overflow-hidden">
-        <motion.img src="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.png" alt="" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, ease: "easeOut" }} className="absolute inset-0 w-full h-full object-cover object-center md:object-right md:translate-x-[4%] md:scale-[1.04] md:[filter:contrast(1.07)_brightness(1.03)]" referrerPolicy="no-referrer" />
+        <motion.img src="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp" alt="Ryan Kroge, SBA Loan Specialist" fetchPriority="high" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, ease: "easeOut" }} className="absolute inset-0 w-full h-full object-cover object-center md:object-right md:translate-x-[4%] md:scale-[1.04] md:[filter:contrast(1.07)_brightness(1.03)]" referrerPolicy="no-referrer" />
         <div className="absolute inset-0 hidden md:block" style={{ background: "linear-gradient(to right, #000000 18%, rgba(0,0,0,0.85) 36%, rgba(0,0,0,0.15) 68%, transparent 100%)" }} />
         <div className="absolute inset-0 bg-black/52 md:hidden" />
         <div className="absolute inset-x-0 top-0 h-40" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.65), transparent)" }} />

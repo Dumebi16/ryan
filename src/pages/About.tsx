@@ -1,9 +1,9 @@
 import { motion } from "motion/react";
 import { useEffect, useRef, ReactNode } from "react";
 import { Phone, FileText, UserCheck, CheckCircle } from "lucide-react";
-const heroImg = 'https://pub-b1a4206ab34045348c40722678aec845.r2.dev/expanded%20ryan%20.png';
-const splitScreenImg = 'https://pub-b1a4206ab34045348c40722678aec845.r2.dev/Ryan_Kroge-21%20BW-2.jpg';
-const missionImg = 'https://pub-b1a4206ab34045348c40722678aec845.r2.dev/Ryan_Kroge-53%20BW.jpg';
+const heroImg = 'https://pub-b1a4206ab34045348c40722678aec845.r2.dev/expanded_ryan.webp';
+const splitScreenImg = 'https://pub-b1a4206ab34045348c40722678aec845.r2.dev/Ryan_Kroge-21_BW.webp';
+const missionImg = 'https://pub-b1a4206ab34045348c40722678aec845.r2.dev/Ryan_Kroge-53_BW.webp';
 import { SEO } from "../components/SEO";
 
 // Component to handle individual line scroll-scrubbed opacity using Vanilla JS

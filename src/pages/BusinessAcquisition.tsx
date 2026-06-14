@@ -1,7 +1,7 @@
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { SEO } from "../components/SEO";
 import { useEffect, useRef, ReactNode, useState } from "react";
-const ryan80 = "https://pub-b1a4206ab34045348c40722678aec845.r2.dev/Ryan_Kroge-80.jpg";
+const ryan80 = "https://pub-b1a4206ab34045348c40722678aec845.r2.dev/Ryan_Kroge-80.webp";
 import {
   Building2,
   TrendingUp,
@@ -873,6 +873,7 @@ export default function BusinessAcquisition() {
         description="Buying or selling a business? Ryan Kroge helps buyers acquire businesses with as little as 10% down using SBA financing, and guides sellers to exit on their terms."
         path="/business-acquisition"
         type="website"
+        faqs={FAQS.map(faq => ({ question: faq.q, answer: faq.a }))}
       />
       <HeroSection />
       <QuickStatsStrip />
