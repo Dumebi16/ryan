@@ -11,7 +11,7 @@
     { "source": "/contact", "destination": "/api/og-post?path=/contact" },
     { "source": "/resources", "destination": "/api/og-post?path=/resources" },
     { "source": "/resources/:slug", "destination": "/api/og-post" },
-    { "source": "/((?!api/|robots\\.txt).*)", "destination": "/index.html" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/og-post.js": {
