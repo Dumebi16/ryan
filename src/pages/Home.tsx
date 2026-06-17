@@ -14,41 +14,60 @@ const ringPts = (cx: number, cy: number, r: number, n: number, startA = -Math.PI
     return [+(cx + r * Math.cos(a)).toFixed(2), +(cy + r * Math.sin(a)).toFixed(2)] as [number, number];
   });
 
-// SBA Loans — 5 concentric rings via stroke-dasharray (6 nodes vs 132)
-const SBALoansIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 180 160" fill="none" stroke="currentColor" className={className} aria-hidden="true">
-    <circle cx="90" cy="80" r="70" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.30" transform="rotate(-90 90 80)" />
-    <circle cx="90" cy="80" r="56" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.35" transform="rotate(-90 90 80)" />
-    <circle cx="90" cy="80" r="42" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.45" transform="rotate(-90 90 80)" />
-    <circle cx="90" cy="80" r="28" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.65" transform="rotate(-90 90 80)" />
-    <circle cx="90" cy="80" r="14" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.07" transform="rotate(-90 90 80)" />
-    <circle cx="90" cy="80" r="2" fill="currentColor" stroke="none" />
-  </svg>
-);
+// SBA Loans — five tight concentric rings converging to a centre point
+const SBALoansIcon = ({ className }: { className?: string }) => {
+  const [cx, cy] = [90, 80];
+  const dots: [number, number][] = [
+    ...ringPts(cx, cy, 70, 44),
+    ...ringPts(cx, cy, 56, 35),
+    ...ringPts(cx, cy, 42, 26),
+    ...ringPts(cx, cy, 28, 17),
+    ...ringPts(cx, cy, 14,  9),
+    [cx, cy],
+  ];
+  return (
+    <svg viewBox="0 0 180 160" fill="currentColor" className={className} aria-hidden="true">
+      {dots.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={1.85} />)}
+    </svg>
+  );
+};
 
-// Acquisition — two overlapping Venn rings (9 nodes vs 117)
-const AcquisitionIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 180 160" fill="none" stroke="currentColor" className={className} aria-hidden="true">
-    <circle cx="64"  cy="80" r="52" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.20" transform="rotate(-90 64 80)" />
-    <circle cx="64"  cy="80" r="32" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.35" transform="rotate(-90 64 80)" />
-    <circle cx="116" cy="80" r="52" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.20" transform="rotate(-90 116 80)" />
-    <circle cx="116" cy="80" r="32" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.35" transform="rotate(-90 116 80)" />
-    <path d="M82,80 Q97,74 111,80" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 2.9" fill="none" />
-  </svg>
-);
+const AcquisitionIcon = ({ className }: { className?: string }) => {
+  const dots: [number, number][] = [
+    ...ringPts(64,  80, 52, 33),
+    ...ringPts(64,  80, 32, 20),
+    ...ringPts(116, 80, 52, 33),
+    ...ringPts(116, 80, 32, 20),
+    ...Array.from({ length: 11 }, (_, i): [number, number] => [
+      +(82 + i * 2.9).toFixed(1),
+      +(80 + Math.sin((i / 10) * Math.PI) * 6).toFixed(1),
+    ]),
+  ];
+  return (
+    <svg viewBox="0 0 180 160" fill="currentColor" className={className} aria-hidden="true">
+      {dots.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={1.85} />)}
+    </svg>
+  );
+};
 
-// Guidance — outer ring + 3 rising arc paths (8 nodes vs 104)
-const GuidanceIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 180 160" fill="none" stroke="currentColor" className={className} aria-hidden="true">
-    <circle cx="90" cy="80" r="70" strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.30" transform="rotate(-90 90 80)" />
-    <path strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.30"
-      d="M44.8,127.6 L51.8,122 L58.7,116.2 L65.7,110.1 L72.6,103.9 L79.6,97.6 L86.5,91.2 L93.5,84.6 L100.4,78 L107.4,71.3 L114.3,64.4 L121.3,57.5 L128.2,50.6 L135.2,43.5" />
-    <path strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.30"
-      d="M39.9,118 L46.8,112.6 L53.8,107 L60.7,101.2 L67.7,95.1 L74.6,88.9 L81.6,82.6 L88.5,76.2 L95.5,69.6 L102.4,63 L109.4,56.3 L116.3,49.4 L123.3,42.5 L130.2,35.6" />
-    <path strokeWidth="3.7" strokeLinecap="round" strokeDasharray="3.55 6.30"
-      d="M56.7,131.2 L63.7,125.1 L70.6,118.9 L77.6,112.6 L84.5,106.2 L91.5,99.6 L98.4,93 L105.4,86.3 L112.3,79.4 L119.3,72.5 L126.2,65.6 L133.2,58.5 L140.1,51.4" />
-  </svg>
-);
+const GuidanceIcon = ({ className }: { className?: string }) => {
+  const [cx, cy, r] = [90, 80, 70];
+  const outer = ringPts(cx, cy, r, 44);
+  const arc = (yShift: number, xShift: number): [number, number][] =>
+    Array.from({ length: 20 }, (_, i) => {
+      const t = i / 19;
+      const x = 24 + xShift + t * 132;
+      const y = 142 + yShift - Math.pow(t, 1.15) * 120;
+      return [+x.toFixed(1), +y.toFixed(1)] as [number, number];
+    }).filter(([px, py]) => (px - cx) ** 2 + (py - cy) ** 2 <= (r - 4) ** 2);
+
+  const dots: [number, number][] = [ ...outer, ...arc(0, 0), ...arc(-15, 2), ...arc(15, -2) ];
+  return (
+    <svg viewBox="0 0 180 160" fill="currentColor" className={className} aria-hidden="true">
+      {dots.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={1.85} />)}
+    </svg>
+  );
+};
 
 const ExpertiseIcon = ({ className }: { className?: string }) => {
   const dots: [number, number][] = [ ...ringPts(16, 16, 11, 10), ...ringPts(16, 16, 6, 7), [16, 16] ];
@@ -275,7 +294,7 @@ const TestimonialsSection = () => {
         </div>
       </motion.div>
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.2 }} viewport={{ once: true, amount: 0.3 }} className="flex items-center justify-between max-w-4xl mt-16 md:mt-20">
-        <div className="flex items-center gap-8"><div className="flex items-center gap-3">{TESTIMONIALS.map((t, i) => (<button key={i} onClick={() => handleChange(i)} aria-label={`Go to testimonial ${i + 1}: ${t.author}`} className="group py-4"><span className={`block h-px transition-all duration-500 ease-out ${i === active ? "w-12 bg-[#D4AF37]" : "w-6 bg-white/[0.18] group-hover:w-9 group-hover:bg-white/[0.38]"}`} /></button>))}</div><span className="font-kiona text-[8px] text-white/55 tracking-widest">{String(active + 1).padStart(2, "0")} / {String(TESTIMONIALS.length).padStart(2, "0")}</span></div>
+        <div className="flex items-center gap-8"><div className="flex items-center gap-3">{TESTIMONIALS.map((t, i) => (<button key={i} onClick={() => handleChange(i)} aria-label={`Go to testimonial ${i + 1}: ${t.author}`} className="group py-4"><span className={`block h-px transition-all duration-500 ease-out ${i === active ? "w-12 bg-[#D4AF37]" : "w-6 bg-white/[0.18] group-hover:w-9 group-hover:bg-white/[0.38]"}`} /></button>))}</div><span className="font-kiona text-[8px] text-white/22 tracking-widest">{String(active + 1).padStart(2, "0")} / {String(TESTIMONIALS.length).padStart(2, "0")}</span></div>
         <div className="flex items-center gap-1"><button onClick={handlePrev} aria-label="Previous testimonial" className="p-2.5 text-white/30 hover:text-white/70 transition-colors duration-200"><ChevronLeft size={18} strokeWidth={1.5} /></button><button onClick={handleNext} aria-label="Next testimonial" className="p-2.5 text-white/30 hover:text-white/70 transition-colors duration-200"><ChevronRight size={18} strokeWidth={1.5} /></button></div>
       </motion.div>
       <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.25 }} viewport={{ once: true, amount: 0.3 }} className="mt-14 md:mt-16 max-w-4xl"><button className="font-kiona text-[11px] border border-white/20 text-white px-10 py-4 hover:bg-white hover:text-black hover:border-white transition-all duration-300 inline-flex items-center gap-3">VIEW MORE RECOMMENDATIONS <ArrowRight size={12} strokeWidth={1.5} /></button></motion.div>
@@ -290,7 +309,7 @@ const AboutSection = () => {
         <div className="flex flex-col lg:flex-row min-h-[72vh]">
           <div className="relative w-full h-[72vw] sm:h-[56vw] lg:h-auto lg:w-[44%] overflow-hidden shrink-0"><img src={ryanLaptopImg} alt="Ryan Kroge working on his laptop" loading="lazy" className="absolute inset-0 w-full h-full object-cover object-center grayscale" /><span className="absolute bottom-6 left-6 font-kiona text-[7px] text-white/40 tracking-widest">DETROIT, MI</span></div>
           <div className="flex-1 flex flex-col justify-between px-8 sm:px-12 lg:px-16 xl:px-20 py-12 lg:py-14 border-t lg:border-t-0 lg:border-l border-white/[0.08]">
-            <p className="font-kiona text-[8px] text-white/55 tracking-[0.22em]">RYAN KROGE&nbsp;&nbsp;·&nbsp;&nbsp;SBA LOAN SPECIALIST</p>
+            <p className="font-kiona text-[8px] text-white/28 tracking-[0.22em]">RYAN KROGE&nbsp;&nbsp;·&nbsp;&nbsp;SBA LOAN SPECIALIST</p>
             <div className="flex-1 flex flex-col justify-center py-12 lg:py-0 max-w-lg">
               <motion.span initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} viewport={{ once: true, amount: 0.3 }} className="font-kiona text-[9px] text-white/35 block mb-7 tracking-widest">ABOUT RYAN</motion.span>
               <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.65, delay: 0.07 }} viewport={{ once: true, amount: 0.3 }} className="text-[1.75rem] sm:text-[2rem] lg:text-[2.25rem] font-medium text-white leading-tight tracking-tight mb-7">Experienced Guidance for High-Stakes Business Decisions</motion.h2>
@@ -383,28 +402,17 @@ export default function Home() {
         faqs={FAQ_ITEMS}
       />
       <div className="absolute top-0 left-0 right-0 h-screen z-0 overflow-hidden">
-        {/* Hero image: no JS animation — renders immediately for LCP */}
-        <img
-          src="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp"
-          srcSet="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_hero_640.webp 640w, https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_hero_960.webp 960w, https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp 1200w"
-          sizes="(max-width: 640px) 640px, (max-width: 960px) 960px, 1200px"
-          alt="Ryan Kroge, SBA Loan Specialist"
-          fetchPriority="high"
-          loading="eager"
-          decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-center md:object-right md:translate-x-[4%] md:scale-[1.04] md:[filter:contrast(1.07)_brightness(1.03)]"
-        />
+        <motion.img src="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp" alt="Ryan Kroge, SBA Loan Specialist" fetchPriority="high" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, ease: "easeOut" }} className="absolute inset-0 w-full h-full object-cover object-center md:object-right md:translate-x-[4%] md:scale-[1.04] md:[filter:contrast(1.07)_brightness(1.03)]" referrerPolicy="no-referrer" />
         <div className="absolute inset-0 hidden md:block" style={{ background: "linear-gradient(to right, #000000 18%, rgba(0,0,0,0.85) 36%, rgba(0,0,0,0.15) 68%, transparent 100%)" }} />
         <div className="absolute inset-0 bg-black/52 md:hidden" />
         <div className="absolute inset-x-0 top-0 h-40" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.65), transparent)" }} />
         <div className="absolute inset-x-0 bottom-0 h-52 sm:h-60 md:h-72" style={{ background: "linear-gradient(to bottom, transparent 0%, rgba(245,245,240,0.55) 58%, #F5F5F0 100%)" }} />
       </div>
 
-      {/* Hero text: plain HTML, no JS animation — H1 is the LCP element */}
       <main className="relative flex flex-col items-start justify-center min-h-screen px-6 sm:px-10 md:px-16 lg:px-24 pt-24 pb-32 max-w-7xl z-10">
-        <h1 className="text-[28px] sm:text-[32px] md:text-[40px] font-medium leading-tight mb-6 tracking-tight text-white">Get the <span className="text-primary italic">Capital</span> to <br className="hidden sm:block" />Scale Your Business Fast.</h1>
-        <p className="text-sm sm:text-base md:text-lg text-white/70 md:text-white/60 max-w-lg font-normal leading-relaxed mb-10">Ryan Kroge makes SBA loans simple. We cut through the bank jargon to deliver the funding your vision deserves.</p>
-        <div className="flex flex-col sm:flex-row items-center sm:items-center gap-6 w-full sm:w-auto"><Link to="/contact" className="w-full sm:w-auto font-kiona text-[11px] bg-white text-black px-8 py-4 border border-white transition-all duration-300 hover:bg-transparent hover:text-white text-center">START YOUR APPLICATION</Link><a href="#services" className="font-kiona text-[11px] text-white/80 hover:text-primary transition-colors tracking-[0.3em] py-2 text-center w-full sm:w-auto inline-block">EXPLORE SERVICES</a></div>
+        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }} className="text-[28px] sm:text-[32px] md:text-[40px] font-medium leading-tight mb-6 tracking-tight">Get the <span className="text-primary italic">Capital</span> to <br className="hidden sm:block" />Scale Your Business Fast.</motion.h1>
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }} className="text-sm sm:text-base md:text-lg text-white/70 md:text-white/60 max-w-lg font-normal leading-relaxed mb-10">Ryan Kroge makes SBA loans simple. We cut through the bank jargon to deliver the funding your vision deserves.</motion.p>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="flex flex-col sm:flex-row items-center sm:items-center gap-6 w-full sm:w-auto"><Link to="/contact" className="w-full sm:w-auto font-kiona text-[11px] bg-white text-black px-8 py-4 border border-white transition-all duration-300 hover:bg-transparent hover:text-white text-center">START YOUR APPLICATION</Link><a href="#services" className="font-kiona text-[11px] text-white/80 hover:text-primary transition-colors tracking-[0.3em] py-2 text-center w-full sm:w-auto inline-block">EXPLORE SERVICES</a></motion.div>
       </main>
 
       <section className="relative z-10 bg-[#F5F5F0] py-20 md:py-24 px-6 md:px-16 lg:px-24">
