@@ -26,6 +26,19 @@
     <meta name="twitter:description" content="Get funding to grow your business." />
     <meta name="twitter:image"       content="https://www.ryankroge.com/og-social.jpg" />
 
+    <!-- Font preconnect + async load (non-blocking) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;600&display=swap"
+          media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;600&display=swap" />
+    </noscript>
+
+    <!-- LCP image preload -->
+    <link rel="preload" as="image" href="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp" fetchpriority="high" />
+
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-J0LZRRKJT7"></script>
     <script>

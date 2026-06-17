@@ -307,7 +307,7 @@ const AboutSection = () => {
     <section className="bg-black px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
       <div className="border border-white/[0.1] overflow-hidden">
         <div className="flex flex-col lg:flex-row min-h-[72vh]">
-          <div className="relative w-full h-[72vw] sm:h-[56vw] lg:h-auto lg:w-[44%] overflow-hidden shrink-0"><img src={ryanLaptopImg} alt="Ryan Kroge — SBA Loan Specialist" className="absolute inset-0 w-full h-full object-cover object-center grayscale" /><span className="absolute bottom-6 left-6 font-kiona text-[7px] text-white/40 tracking-widest">DETROIT, MI</span></div>
+          <div className="relative w-full h-[72vw] sm:h-[56vw] lg:h-auto lg:w-[44%] overflow-hidden shrink-0"><img src={ryanLaptopImg} alt="Ryan Kroge — SBA Loan Specialist" loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover object-center grayscale" /><span className="absolute bottom-6 left-6 font-kiona text-[7px] text-white/40 tracking-widest">DETROIT, MI</span></div>
           <div className="flex-1 flex flex-col justify-between px-8 sm:px-12 lg:px-16 xl:px-20 py-12 lg:py-14 border-t lg:border-t-0 lg:border-l border-white/[0.08]">
             <p className="font-kiona text-[8px] text-white/28 tracking-[0.22em]">RYAN KROGE&nbsp;&nbsp;·&nbsp;&nbsp;SBA LOAN SPECIALIST</p>
             <div className="flex-1 flex flex-col justify-center py-12 lg:py-0 max-w-lg">
@@ -401,7 +401,7 @@ export default function Home() {
         type="website"
       />
       <div className="absolute top-0 left-0 right-0 h-screen z-0 overflow-hidden">
-        <motion.img src="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.png" alt="" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, ease: "easeOut" }} className="absolute inset-0 w-full h-full object-cover object-center md:object-right md:translate-x-[4%] md:scale-[1.04] md:[filter:contrast(1.07)_brightness(1.03)]" referrerPolicy="no-referrer" />
+        <img src="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp" alt="" fetchPriority="high" decoding="async" className="absolute inset-0 w-full h-full object-cover object-center md:object-right md:translate-x-[4%] md:scale-[1.04] md:[filter:contrast(1.07)_brightness(1.03)]" />
         <div className="absolute inset-0 hidden md:block" style={{ background: "linear-gradient(to right, #000000 18%, rgba(0,0,0,0.85) 36%, rgba(0,0,0,0.15) 68%, transparent 100%)" }} />
         <div className="absolute inset-0 bg-black/52 md:hidden" />
         <div className="absolute inset-x-0 top-0 h-40" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.65), transparent)" }} />
