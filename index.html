@@ -26,35 +26,56 @@
     <meta name="twitter:description" content="Get funding to grow your business." />
     <meta name="twitter:image"       content="https://www.ryankroge.com/og-social.jpg" />
 
-    <!-- Font preconnect + async load (non-blocking) -->
+    <!-- Critical CSS: prevent black flash before Tailwind loads. Intentionally minimal —
+         avoid border/h1/a resets here; Tailwind v4 dev uses @layer and un-layered
+         styles would override utilities (breaks borders, heading sizes, etc.) -->
+    <style>
+      body{margin:0;background-color:#000;color:#F5F5F0;-webkit-font-smoothing:antialiased}
+      #root{min-height:100vh}
+    </style>
+
+    <!-- Preload LCP hero image with responsive srcset -->
+    <link rel="preload" as="image"
+      href="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp"
+      imagesrcset="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_hero_640.webp 640w, https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_hero_960.webp 960w, https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp 1200w"
+      imagesizes="(max-width: 640px) 640px, (max-width: 960px) 960px, 1200px"
+      fetchpriority="high" />
+
+    <!-- Google Fonts — async load to avoid render-blocking -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;500;600;700&display=swap"
           media="print" onload="this.media='all'" />
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Inter:wght@400;600&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;500;600;700&display=swap" />
     </noscript>
 
-    <!-- LCP image preload -->
-    <link rel="preload" as="image" href="https://pub-b1a4206ab34045348c40722678aec845.r2.dev/ryan_on_the_phone.webp" fetchpriority="high" />
-
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J0LZRRKJT7"></script>
+    <!-- Analytics: deferred until idle to avoid blocking LCP/TBT -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-J0LZRRKJT7');
-    </script>
-    
-    <!-- Microsoft Clarity -->
-    <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
+      function loadAnalytics() {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-J0LZRRKJT7';
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-J0LZRRKJT7');
+
+        (function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
           t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
           y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "wx55tg18iv");
+        })(window, document, "clarity", "script", "wx55tg18iv");
+      }
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadAnalytics, { timeout: 4000 });
+      } else {
+        setTimeout(loadAnalytics, 4000);
+      }
     </script>
   </head>
   <body>
