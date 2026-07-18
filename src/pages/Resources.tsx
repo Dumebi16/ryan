@@ -15,15 +15,19 @@ export default function Resources() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const admin = !!session;
+        const [sessionRes, postsRes] = await Promise.all([
+          supabase.auth.getSession(),
+          supabase.from("posts")
+            .select("*")
+            .eq("is_published", true)
+            .order("published_at", { ascending: false })
+        ]);
+
+        const admin = !!sessionRes.data.session;
         setIsAdmin(admin);
 
-        let query = supabase.from("posts").select("*").eq("is_published", true).order("published_at", { ascending: false });
-
-        const { data, error } = await query;
-        if (error) console.error("Error fetching posts:", error);
-        else setPosts(data || []);
+        if (postsRes.error) console.error("Error fetching posts:", postsRes.error);
+        else setPosts(postsRes.data || []);
       } catch (err) {
         console.error("Exception fetching posts:", err);
       } finally {
@@ -100,8 +104,49 @@ export default function Resources() {
         )}
 
         {loading ? (
-          <div className="flex justify-center items-center h-64 border border-white/10 bg-white/[0.02]">
-            <p className="text-white/50 tracking-widest font-kiona uppercase text-sm">Loading resources...</p>
+          <div className="space-y-12">
+            {/* Featured Post Skeleton */}
+            <div className="flex flex-col md:flex-row border border-white/10 bg-white/[0.02] overflow-hidden h-auto md:h-[400px] animate-pulse">
+              {/* Image box */}
+              <div className="md:w-1/2 min-h-[250px] md:h-full bg-white/[0.04] shrink-0" />
+              {/* Content box */}
+              <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center gap-4">
+                <div className="h-4 bg-[#D4AF37]/30 rounded w-1/4" />
+                <div className="space-y-2">
+                  <div className="h-8 bg-white/[0.08] rounded w-3/4" />
+                  <div className="h-8 bg-white/[0.08] rounded w-1/2" />
+                </div>
+                <div className="space-y-2 mt-2">
+                  <div className="h-4 bg-white/[0.04] rounded w-full" />
+                  <div className="h-4 bg-white/[0.04] rounded w-5/6" />
+                </div>
+                <div className="h-4 bg-[#D4AF37]/20 rounded w-1/3 mt-4" />
+              </div>
+            </div>
+
+            {/* Grid Posts Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="border border-white/10 bg-white/[0.02] overflow-hidden flex flex-col h-[400px] animate-pulse">
+                  {/* Image box */}
+                  <div className="h-48 bg-white/[0.04]" />
+                  {/* Content box */}
+                  <div className="p-7 flex flex-col flex-grow gap-4">
+                    <div className="h-4 bg-[#D4AF37]/30 rounded w-1/3" />
+                    <div className="space-y-2">
+                      <div className="h-6 bg-white/[0.08] rounded w-5/6" />
+                      <div className="h-6 bg-white/[0.08] rounded w-2/3" />
+                    </div>
+                    <div className="space-y-2 mt-2 flex-grow">
+                      <div className="h-3 bg-white/[0.04] rounded w-full" />
+                      <div className="h-3 bg-white/[0.04] rounded w-11/12" />
+                      <div className="h-3 bg-white/[0.04] rounded w-4/5" />
+                    </div>
+                    <div className="h-4 bg-[#D4AF37]/20 rounded w-1/3 mt-auto" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : displayPosts.length === 0 ? null : (
           <>
