@@ -11,6 +11,16 @@ const EVENT_TYPE_ID = Number(process.env.CAL_EVENT_TYPE_ID ?? "5482148");
 const TZ = "America/Detroit";
 const CAL_API_KEY = process.env.CAL_API_KEY;
 
+function normalizeEmail(raw) {
+  if (!raw) return "";
+  let e = String(raw).trim().toLowerCase();
+  // Handle voice-dictated formats: "user at gmail dot com" or "user@gmail dot com"
+  e = e.replace(/\s+at\s+/gi, "@").replace(/\s+dot\s+/gi, ".").replace(/\s+/g, "");
+  // Strip hyphens from common domain names that get mis-transcribed (g-mail → gmail)
+  e = e.replace(/@([a-z0-9]+(?:-[a-z0-9]+)+)\./, (_, domain) => `@${domain.replace(/-/g, "")}.`);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) ? e : "";
+}
+
 function fmtTime(isoString) {
   return new Date(isoString).toLocaleString("en-US", {
     weekday: "long",
@@ -40,8 +50,10 @@ export default async function handler(req, res) {
   }
   const { name, email, phone, start_time, notes } = rawBody;
 
-  // Email is optional — use placeholder so callers never have to provide it
-  const resolvedEmail = (email ?? "").trim() || "booking@ryan-kroge-sba.com";
+  // Normalize voice-dictated emails (e.g. "hanetoh at gmail dot com" → "hanetoh@gmail.com")
+  // then fall back to placeholder if still invalid.
+  const normalizedEmail = normalizeEmail(email);
+  const resolvedEmail = normalizedEmail || "booking@ryan-kroge-sba.com";
 
   if (!name || !start_time) {
     console.error("[book-slot] Missing required fields:", { name: !!name, start_time: !!start_time });

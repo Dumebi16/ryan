@@ -16,6 +16,7 @@ import {
   ArrowRight,
   ChevronDown,
   Calendar,
+  AlertCircle,
 } from "lucide-react";
 
 // ─── Hero ──────────────────────────────────────────────────────────────────────
