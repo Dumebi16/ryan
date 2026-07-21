@@ -7,9 +7,16 @@ coverage/
 .env*
 !.env.example
 .vercel
+.claude
+.wrangler
+speakers/
+scripts/optimized/
+check_errors.cjs
 website-cloner-mcp/
 test-*.js
 test-*.png
+test-*.mjs
 test_*.js
 
 testsprite_tests/tmp/config.json
+

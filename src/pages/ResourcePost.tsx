@@ -94,6 +94,24 @@ export default function ResourcePost() {
     return () => { document.getElementById('preview-banner-offset')?.remove(); };
   }, [isPreview]);
 
+  // Gracefully hide any broken images so broken image icons never render
+  useEffect(() => {
+    if (!post) return;
+    const timer = setTimeout(() => {
+      const imgs = document.querySelectorAll('.article-content img');
+      imgs.forEach((img) => {
+        const imageElement = img as HTMLImageElement;
+        imageElement.onerror = () => {
+          imageElement.style.display = 'none';
+        };
+        if (imageElement.complete && imageElement.naturalWidth === 0) {
+          imageElement.style.display = 'none';
+        }
+      });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [post]);
+
   useEffect(() => {
     async function fetchPost() {
       if (!slug) return;
