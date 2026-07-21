@@ -8,6 +8,8 @@ import { supabase } from "../lib/supabase";
 import { trackEvent, hasTracked, markTracked } from "../lib/analytics";
 import CTASection from "../components/CTASection";
 
+const postCache = new Map<string, { post: any; faqs: any[] }>();
+
 export default function ResourcePost() {
   const { slug } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
@@ -95,9 +97,18 @@ export default function ResourcePost() {
   useEffect(() => {
     async function fetchPost() {
       if (!slug) return;
+
+      // 1. Serve from client-side memory cache if available (0ms instant load)
+      if (postCache.has(slug) && !isPreview) {
+        const cached = postCache.get(slug)!;
+        setPost(cached.post);
+        setFaqs(cached.faqs);
+        setLoading(false);
+        return;
+      }
+
       try {
         let session = null;
-        // Preview mode: only authenticated admins can view drafts
         if (isPreview) {
           const { data } = await supabase.auth.getSession();
           session = data.session;
@@ -107,35 +118,30 @@ export default function ResourcePost() {
           }
         }
 
-        let query = supabase.from("posts").select("*").eq("slug", slug);
-        
-        // If not in authenticated preview mode, only allow published posts
+        // 2. Fetch post AND post_faqs in a single relational query (eliminates network waterfall)
+        let query = supabase.from("posts").select("*, post_faqs(*)").eq("slug", slug);
+
         if (!isPreview || !session) {
           query = query.eq("is_published", true);
         }
 
         const { data, error } = await query.single();
-          
+
         if (error) {
           console.error("Error fetching post:", error);
-        } else {
+        } else if (data) {
+          const sortedFaqs = (data.post_faqs || []).sort(
+            (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0)
+          );
           setPost(data);
+          setFaqs(sortedFaqs);
 
-          // Fetch FAQs if post exists
-          if (data) {
-            const { data: faqData } = await supabase
-              .from("post_faqs")
-              .select("*")
-              .eq("post_id", data.id)
-              .order("position", { ascending: true });
+          // Save to memory cache
+          postCache.set(slug, { post: data, faqs: sortedFaqs });
 
-            setFaqs(faqData || []);
-
-            // Track post_view once per session (skip in preview)
-            if (!isPreview && !hasTracked(`view_${data.slug}`)) {
-              markTracked(`view_${data.slug}`);
-              trackEvent("post_view", { id: data.id, slug: data.slug, category: data.category });
-            }
+          if (!isPreview && !hasTracked(`view_${data.slug}`)) {
+            markTracked(`view_${data.slug}`);
+            trackEvent("post_view", { id: data.id, slug: data.slug, category: data.category });
           }
         }
       } catch (err) {
@@ -146,12 +152,42 @@ export default function ResourcePost() {
     }
 
     fetchPost();
-  }, [slug]);
+  }, [slug, isPreview]);
 
   if (loading) {
     return (
-      <div className="bg-[#0a0a0a] min-h-screen text-white/90 pt-48 pb-24 font-light flex justify-center">
-        <p className="text-white/50 tracking-widest font-kiona uppercase">Loading insight...</p>
+      <div className="bg-[#0a0a0a] min-h-screen text-white/90 pt-32 md:pt-48 pb-24 font-light">
+        <div className="max-w-4xl mx-auto px-6 animate-pulse space-y-8">
+          {/* Back button skeleton */}
+          <div className="h-4 bg-white/10 rounded w-32 mb-8" />
+          
+          {/* Category & Date badge skeleton */}
+          <div className="flex items-center gap-3">
+            <div className="h-4 bg-[#D4AF37]/30 rounded w-24" />
+            <div className="h-4 bg-white/10 rounded w-28" />
+          </div>
+
+          {/* Article Title skeleton */}
+          <div className="space-y-3">
+            <div className="h-10 md:h-12 bg-white/10 rounded w-full" />
+            <div className="h-10 md:h-12 bg-white/10 rounded w-4/5" />
+          </div>
+
+          {/* Author/Share bar skeleton */}
+          <div className="h-12 bg-white/[0.03] border border-white/10 rounded w-full my-6" />
+
+          {/* Hero image placeholder skeleton */}
+          <div className="aspect-video w-full bg-white/[0.04] border border-white/10 rounded-lg my-8" />
+
+          {/* Article body paragraphs skeleton */}
+          <div className="space-y-4 pt-4">
+            <div className="h-4 bg-white/[0.06] rounded w-full" />
+            <div className="h-4 bg-white/[0.06] rounded w-11/12" />
+            <div className="h-4 bg-white/[0.06] rounded w-4/5" />
+            <div className="h-4 bg-white/[0.06] rounded w-full" />
+            <div className="h-4 bg-white/[0.06] rounded w-9/12" />
+          </div>
+        </div>
       </div>
     );
   }
