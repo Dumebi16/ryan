@@ -118,30 +118,55 @@ export default function ResourcePost() {
           }
         }
 
-        // 2. Fetch post AND post_faqs in a single relational query (eliminates network waterfall)
-        let query = supabase.from("posts").select("*, post_faqs(*)").eq("slug", slug);
+        // If previewing draft post as admin, query Supabase directly
+        if (isPreview && session) {
+          const { data } = await supabase
+            .from("posts")
+            .select("*, post_faqs(*)")
+            .eq("slug", slug)
+            .single();
 
-        if (!isPreview || !session) {
-          query = query.eq("is_published", true);
+          if (data) {
+            const sortedFaqs = (data.post_faqs || []).sort(
+              (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0)
+            );
+            setPost(data);
+            setFaqs(sortedFaqs);
+          }
+          return;
         }
 
-        const { data, error } = await query.single();
-
-        if (error) {
-          console.error("Error fetching post:", error);
-        } else if (data) {
-          const sortedFaqs = (data.post_faqs || []).sort(
-            (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0)
-          );
+        // 2. Fetch public post from Vercel Edge SWR Endpoint (~20ms global latency)
+        const res = await fetch(`/api/posts?slug=${encodeURIComponent(slug)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const faqsList = data.post_faqs || [];
           setPost(data);
-          setFaqs(sortedFaqs);
+          setFaqs(faqsList);
 
-          // Save to memory cache
-          postCache.set(slug, { post: data, faqs: sortedFaqs });
+          // Save in client-side memory cache
+          postCache.set(slug, { post: data, faqs: faqsList });
 
-          if (!isPreview && !hasTracked(`view_${data.slug}`)) {
+          if (!hasTracked(`view_${data.slug}`)) {
             markTracked(`view_${data.slug}`);
             trackEvent("post_view", { id: data.id, slug: data.slug, category: data.category });
+          }
+        } else {
+          // Fallback to direct Supabase query
+          const { data } = await supabase
+            .from("posts")
+            .select("*, post_faqs(*)")
+            .eq("slug", slug)
+            .eq("is_published", true)
+            .single();
+
+          if (data) {
+            const sortedFaqs = (data.post_faqs || []).sort(
+              (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0)
+            );
+            setPost(data);
+            setFaqs(sortedFaqs);
+            postCache.set(slug, { post: data, faqs: sortedFaqs });
           }
         }
       } catch (err) {

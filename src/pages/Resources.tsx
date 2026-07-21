@@ -15,19 +15,24 @@ export default function Resources() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const [sessionRes, postsRes] = await Promise.all([
-          supabase.auth.getSession(),
-          supabase.from("posts")
-            .select("*")
-            .eq("is_published", true)
-            .order("published_at", { ascending: false })
-        ]);
-
-        const admin = !!sessionRes.data.session;
+        const { data: { session } } = await supabase.auth.getSession();
+        const admin = !!session;
         setIsAdmin(admin);
 
-        if (postsRes.error) console.error("Error fetching posts:", postsRes.error);
-        else setPosts(postsRes.data || []);
+        // Fetch from Edge SWR cached API endpoint (~20ms global CDN latency)
+        const res = await fetch("/api/posts");
+        if (res.ok) {
+          const data = await res.json();
+          setPosts(data || []);
+        } else {
+          // Fallback to direct Supabase query
+          const { data } = await supabase
+            .from("posts")
+            .select("*")
+            .eq("is_published", true)
+            .order("published_at", { ascending: false });
+          setPosts(data || []);
+        }
       } catch (err) {
         console.error("Exception fetching posts:", err);
       } finally {
