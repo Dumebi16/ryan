@@ -6,16 +6,7 @@ export const usePageTracking = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // 1. Direct GA4 tracking (retained as requested)
-      // @ts-ignore - gtag is injected via index.html
-      if (typeof window.gtag === 'function') {
-        // @ts-ignore
-        window.gtag('event', 'page_view', {
-          page_path: location.pathname + location.search,
-        });
-      }
-
-      // 2. Google Tag Manager custom event tracking
+      // Google Tag Manager custom event tracking — GTM's GA4 tag fires off this event
       // @ts-ignore - dataLayer is injected via index.html
       window.dataLayer = window.dataLayer || [];
       // @ts-ignore

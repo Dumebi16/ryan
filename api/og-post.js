@@ -33,7 +33,7 @@ export default async function handler(req, res) {
         description: 'Meet Ryan Kroge, a Detroit-based SBA Loan Specialist with 25+ years of experience helping business owners secure SBA financing and structure acquisitions.',
         image: `${SITE_URL}/og-social.jpg`,
       },
-      '/sba-loan': {
+      '/sba-loans': {
         title: 'SBA Loan Options (7a & 504) Explained — Ryan Kroge',
         description: 'Understand the difference between SBA 7(a) and 504 loans. Get expert guidance on terms, requirements, and securing the best capital for your business.',
         image: `${SITE_URL}/og-social.jpg`,

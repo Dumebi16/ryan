@@ -10,10 +10,10 @@
 
 ## Pages
 
-- /: Homepage — overview of services and expertise
-- /about: About Ryan — background, experience, credentials
-- /sba-loans: SBA Loan details — 7(a) and 504 programs explained
-- /business-acquisition: Business acquisition financing
-- /strategic-financial-guidance: Strategic financial guidance for business owners
-- /contact: Contact Ryan — schedule a consultation
-- /resources: Blog and educational resources on SBA lending
+- [Homepage](https://www.ryankroge.com/): overview of services and expertise
+- [About](https://www.ryankroge.com/about): About Ryan — background, experience, credentials
+- [SBA Loans](https://www.ryankroge.com/sba-loans): SBA Loan details — 7(a) and 504 programs explained
+- [Business Acquisition](https://www.ryankroge.com/business-acquisition): Business acquisition financing
+- [Strategic Financial Guidance](https://www.ryankroge.com/strategic-financial-guidance): Strategic financial guidance for business owners
+- [Contact](https://www.ryankroge.com/contact): Contact Ryan — schedule a consultation
+- [Resources](https://www.ryankroge.com/resources): Blog and educational resources on SBA lending

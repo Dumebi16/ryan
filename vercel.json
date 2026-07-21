@@ -19,7 +19,7 @@
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/", "destination": "/api/og-post?path=/" },
     { "source": "/about", "destination": "/api/og-post?path=/about" },
-    { "source": "/sba-loan", "destination": "/api/og-post?path=/sba-loan" },
+    { "source": "/sba-loans", "destination": "/api/og-post?path=/sba-loans" },
     { "source": "/business-acquisition", "destination": "/api/og-post?path=/business-acquisition" },
     { "source": "/strategic-financial-guidance", "destination": "/api/og-post?path=/strategic-financial-guidance" },
     { "source": "/contact", "destination": "/api/og-post?path=/contact" },
