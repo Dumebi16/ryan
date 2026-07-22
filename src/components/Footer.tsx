@@ -124,12 +124,12 @@ export const Footer = () => {
           © 2026 RYAN KROGE. ALL RIGHTS RESERVED.
         </span>
         <div className="flex items-center gap-6">
-          <a href="#" className="font-kiona text-[8px] text-white/22 hover:text-white/50 tracking-widest transition-colors duration-200">
+          <Link to="/privacy-policy" className="font-kiona text-[8px] text-white/22 hover:text-white/50 tracking-widest transition-colors duration-200">
             PRIVACY POLICY
-          </a>
-          <a href="#" className="font-kiona text-[8px] text-white/22 hover:text-white/50 tracking-widest transition-colors duration-200">
+          </Link>
+          <Link to="/terms-of-service" className="font-kiona text-[8px] text-white/22 hover:text-white/50 tracking-widest transition-colors duration-200">
             TERMS OF SERVICE
-          </a>
+          </Link>
         </div>
       </div>
     </footer>
